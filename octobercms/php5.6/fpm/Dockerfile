@@ -1,4 +1,4 @@
-FROM php:7.0-apache
+FROM php:5.6-fpm
 MAINTAINER Aspen Digital <info@aspendigital.com>
 
 RUN apt-get update && apt-get install -y git-core unzip \
@@ -19,9 +19,7 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 
-RUN a2enmod rewrite
-
-RUN curl -o october.zip -SL https://github.com/octobercms/october/archive/master.zip \
+RUN curl -o october.zip -fSL https://github.com/octobercms/october/archive/master.zip \
   && unzip october.zip > /dev/null \
   && find october-master -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
   && rmdir october-master \
