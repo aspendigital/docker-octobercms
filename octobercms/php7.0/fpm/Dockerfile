@@ -26,3 +26,9 @@ RUN curl -o october.zip -fSL https://github.com/octobercms/october/archive/maste
 	&& rm october.zip
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
+
+COPY docker-entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["php-fpm"]
