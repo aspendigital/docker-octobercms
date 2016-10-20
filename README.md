@@ -1,4 +1,4 @@
-# Aspen Digital Docker Library
+# Docker Library
 
 This repository defines docker images we use at Aspen Digital
 
