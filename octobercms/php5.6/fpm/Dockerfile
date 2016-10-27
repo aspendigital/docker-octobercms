@@ -1,7 +1,7 @@
 FROM php:5.6-fpm
 MAINTAINER Aspen Digital <info@aspendigital.com>
 
-RUN apt-get update && apt-get install -y git-core unzip \
+RUN apt-get update && apt-get install -y git-core \
   libsqlite3-dev libpq-dev libmcrypt-dev libpng12-dev libjpeg-dev \
   && rm -rf /var/lib/apt/lists/* \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
@@ -19,11 +19,16 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 
-RUN curl -o october.zip -fSL https://github.com/octobercms/october/archive/master.zip \
-  && unzip october.zip > /dev/null \
-  && find october-master -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
-  && rmdir october-master \
-	&& rm october.zip
+ENV OCTOBERCMS_BUILD 365
+ENV OCTOBERCMS_COMMIT_HASH 2659ae708f0c4cd45b48e4eaaac9e042d1a06649
+ENV OCTOBERCMS_CHECKSUM 70feb8e5ae7359cd79a9d6e3103827d6e02c43ee
+
+RUN curl -o octobercms.tar.gz -fSL https://github.com/octobercms/october/archive/{$OCTOBERCMS_COMMIT_HASH}.tar.gz \
+  && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
+	&& tar -xzf octobercms.tar.gz \
+  && find "october-$OCTOBERCMS_COMMIT_HASH" -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
+  && rmdir "october-$OCTOBERCMS_COMMIT_HASH" \
+	&& rm octobercms.tar.gz
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
 

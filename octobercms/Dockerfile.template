@@ -20,11 +20,16 @@ RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 %%VARIANT_EXTRAS%%
 
-RUN curl -o october.zip -fSL https://github.com/octobercms/october/archive/master.zip \
-  && unzip october.zip > /dev/null \
-  && find october-master -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
-  && rmdir october-master \
-	&& rm october.zip
+ENV OCTOBERCMS_BUILD %%OCTOBERCMS_BUILD%%
+ENV OCTOBERCMS_COMMIT_HASH %%OCTOBERCMS_COMMIT_HASH%%
+ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
+
+RUN curl -o octobercms.tar.gz -fSL https://github.com/octobercms/october/archive/{$OCTOBERCMS_COMMIT_HASH}.tar.gz \
+  && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
+	&& tar -xzf octobercms.tar.gz \
+  && find "october-$OCTOBERCMS_COMMIT_HASH" -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
+  && rmdir "october-$OCTOBERCMS_COMMIT_HASH" \
+	&& rm octobercms.tar.gz
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
 
