@@ -7,10 +7,10 @@ Based on [official docker PHP images](https://github.com/docker-library/php), im
 ## Supported tags
 
 
-- `build.376-apache`, `build.376-php7.0-apache`, `php7.0-apache`, `latest`: [php7.0/apache/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php7.0/apache/Dockerfile)
-- `build.376-fpm`, `build.376-php7.0-fpm`, `php7.0-fpm`: [php7.0/fpm/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php7.0/fpm/Dockerfile)
-- `build.376-php5.6-apache`, `php5.6-apache`: [php5.6/apache/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php5.6/apache/Dockerfile)
-- `build.376-php5.6-fpm`, `php5.6-fpm`: [php5.6/fpm/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php5.6/fpm/Dockerfile)
+- `build.380-apache`, `build.380-php7.0-apache`, `php7.0-apache`, `latest`: [php7.0/apache/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php7.0/apache/Dockerfile)
+- `build.380-fpm`, `build.380-php7.0-fpm`, `php7.0-fpm`: [php7.0/fpm/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php7.0/fpm/Dockerfile)
+- `build.380-php5.6-apache`, `php5.6-apache`: [php5.6/apache/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php5.6/apache/Dockerfile)
+- `build.380-php5.6-fpm`, `php5.6-fpm`: [php5.6/fpm/Dockerfile](https://github.com/aspendigital/docker-library/blob/master/octobercms/php5.6/fpm/Dockerfile)
 
 #### Edge
 - `build.377-apache`, `build.377-php7.0-apache`, `edge`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-library/blob/master/octobercms/php7.0/apache/Dockerfile.edge)
@@ -20,6 +20,10 @@ Based on [official docker PHP images](https://github.com/docker-library/php), im
 
 #### Archive
 
+- `build.376-apache`, `build.376-php7.0-apache`
+- `build.376-fpm`, `build.376-php7.0-fpm`
+- `build.376-php5.6-apache`
+- `build.376-php5.6-fpm`
 - `build.365-apache`, `build.365-php7.0-apache`
 - `build.365-fpm`, `build.365-php7.0-fpm`
 - `build.365-php5.6-apache`

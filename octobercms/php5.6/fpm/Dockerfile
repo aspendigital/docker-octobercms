@@ -21,9 +21,9 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 
-ENV OCTOBERCMS_BUILD 376
-ENV OCTOBERCMS_COMMIT_HASH 359461d93eafc971f341151d16bd814b7cf8556f
-ENV OCTOBERCMS_CHECKSUM 246db08500ff97126574bece8b0fab2d58dc7b3c
+        ENV OCTOBERCMS_BUILD 380
+        ENV OCTOBERCMS_COMMIT_HASH d1268c9905db994197a31ece6acaf01e0050fdce
+        ENV OCTOBERCMS_CHECKSUM fd3a7c6b6dafc8208c042e55a457bc2efe93daad
 
 RUN curl -o octobercms.tar.gz -fSL https://github.com/octobercms/october/archive/{$OCTOBERCMS_COMMIT_HASH}.tar.gz \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
