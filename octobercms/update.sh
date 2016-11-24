@@ -1,17 +1,10 @@
 #!/bin/bash
+set -eu
 
 # Dependency check
-if ! hash curl 2>&-; then
-  echo "Error: curl is required" && exit 1;
-elif ! hash jq 2>&-; then
-  echo "Error: jq is required" && exit 1;
-fi
-
-if ! hash sha1sum 2>&-; then
-  if ! hash openssl 2>&-; then
-    echo "Error: openssl/sha1sum is required" && exit 1;
-  fi
-fi
+if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
+if ! hash jq 2>&-; then echo "Error: jq is required" && exit 1; fi
+if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl/sha1sum is required" && exit 1; fi } fi
 
 # Pull in current build values
 source version
@@ -20,30 +13,14 @@ source version
 OCTOBERCMS_SERVER_HASH=YToyOntzOjM6InBocCI7czo2OiI3LjAuMTMiO3M6MzoidXJsIjtzOjE2OiJodHRwOi8vbG9jYWxob3N0Ijt9
 
 # Set default NULL HASH if core hash isn't set
-if [ -z $OCTOBERCMS_CORE_HASH ]; then
-  OCTOBERCMS_CORE_HASH=6c3e226b4d4795d518ab341b0824ec29
-fi
+[ -z "$OCTOBERCMS_CORE_HASH" ] && OCTOBERCMS_CORE_HASH=6c3e226b4d4795d518ab341b0824ec29
 
 echo -n " - Querying October CMS API for updates..."
 
 OCTOBER_API_RESPONSE=$(
-  curl --request POST \
-    --fail --silent --show-error \
-    --connect-timeout 15 \
-    --url http://gateway.octobercms.com/api/core/update \
-    --header 'cache-control: no-cache' \
-    --form core=$OCTOBERCMS_CORE_HASH \
-    --form 'plugins=a:0:{}' \
-    --form server=$OCTOBERCMS_SERVER_HASH \
-    --form build=$OCTOBERCMS_BUILD \
-    --form edge=0 )
-
-# Check if cURL exit code. Confirm success (0)
-if [ 0 -eq $? ]; then
-  OCTOBER_API_UPDATES=$( echo "$OCTOBER_API_RESPONSE" | jq '. | { build: .core.build, hash: .core.hash, update: .update, updates: .core.updates }')
-else
-  echo "Error: October CMS API query failed" && exit 1;
-fi
+  curl -X POST -fsS --connect-timeout 15 --url http://gateway.octobercms.com/api/core/update \
+   -F "build=$OCTOBERCMS_BUILD" -F "core=$OCTOBERCMS_CORE_HASH" -F "plugins=a:0:{}" -F "server=$OCTOBERCMS_SERVER_HASH")
+OCTOBER_API_UPDATES=$( echo "$OCTOBER_API_RESPONSE" | jq '. | { build: .core.build, hash: .core.hash, update: .update, updates: .core.updates }')
 
 # Exit if no updates.
 if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
@@ -52,37 +29,25 @@ fi
 
 echo -e "\n - Fetching GitHub repository for latest commit hash..."
 
-GITHUB_API_RESPONSE=$(curl --fail --connect-timeout 15 -sS https://api.github.com/repos/octobercms/october/commits/master)
-
-if [ 0 -eq $? ]; then
-  LATEST_COMMIT_HASH=$( echo "$GITHUB_API_RESPONSE" | jq -r '.sha') || exit 1;
-else
-  echo "Error: GitHub API call failed" && exit 1;
-fi
+GITHUB_API_RESPONSE=$(curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/commits/master)
+LATEST_COMMIT_HASH=$( echo "$GITHUB_API_RESPONSE" | jq -r '.sha') || exit 1;
 
 # Compare latest commit hash with stored value.
 #  Generate new checksum if new. If not, abort.
 if [ "$LATEST_COMMIT_HASH" != "$OCTOBERCMS_MASTER_HASH" ]; then
-
   echo " - Downloading latest build..."
   LATEST_ARCHIVE="octobercms-$OCTOBERCMS_BUILD.tar.gz"
-  curl -o $LATEST_ARCHIVE --fail --show-error --connect-timeout 15 \
-   --progress-bar --location https://github.com/octobercms/october/archive/$LATEST_COMMIT_HASH.tar.gz
-
-  if [ 0 -eq $? ]; then
-    echo " - Generating new checksum..."
-    if hash sha1sum 2>&-; then
-      LATEST_ARCHIVE_CHECKSUM=$(sha1sum $LATEST_ARCHIVE | awk '{print $1}')
-    elif hash openssl 2>&-; then
-      LATEST_ARCHIVE_CHECKSUM=$(openssl sha1 $LATEST_ARCHIVE | awk '{print $2}')
-    else
-      echo "Error: Could not generate checksum" && exit 1;
-    fi
-    echo " - Removing latest build..."
-    rm $LATEST_ARCHIVE
+  curl -o $LATEST_ARCHIVE -fS#L --connect-timeout 15 https://github.com/octobercms/october/archive/$LATEST_COMMIT_HASH.tar.gz
+  echo " - Generating new checksum..."
+  if hash sha1sum 2>&-; then
+    LATEST_ARCHIVE_CHECKSUM=$(sha1sum $LATEST_ARCHIVE | awk '{print $1}')
+  elif hash openssl 2>&-; then
+    LATEST_ARCHIVE_CHECKSUM=$(openssl sha1 $LATEST_ARCHIVE | awk '{print $2}')
   else
-    echo "Error: Failed to download GitHub archive" && exit 1;
+    echo "Error: Could not generate checksum" && exit 1;
   fi
+  echo " - Removing latest build..."
+  rm $LATEST_ARCHIVE
 else
   echo " - The latest commit on master hasn't changed. Aborting..." && exit 0;
 fi
@@ -102,5 +67,4 @@ fi
 
 echo " - Update complete."
 
-# echo $(echo "$OCTOBER_API_UPDATES" | jq '. | .updates')
 exit 0;
