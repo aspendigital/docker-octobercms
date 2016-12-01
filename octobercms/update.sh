@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -e
 
 # Dependency check
 if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
@@ -15,16 +15,25 @@ OCTOBERCMS_SERVER_HASH=YToyOntzOjM6InBocCI7czo2OiI3LjAuMTMiO3M6MzoidXJsIjtzOjE2O
 # Set default NULL HASH if core hash isn't set
 [ -z "$OCTOBERCMS_CORE_HASH" ] && OCTOBERCMS_CORE_HASH=6c3e226b4d4795d518ab341b0824ec29
 
-echo -n " - Querying October CMS API for updates..."
+[ "$1" = "edge" ] && EDGE=1 || EDGE=0
+
+[ $EDGE -eq 1 ] && echo -n " - Querying October CMS API for EDGE updates..." || echo -n " - Querying October CMS API for updates..."
 
 OCTOBER_API_RESPONSE=$(
   curl -X POST -fsS --connect-timeout 15 --url http://gateway.octobercms.com/api/core/update \
-   -F "build=$OCTOBERCMS_BUILD" -F "core=$OCTOBERCMS_CORE_HASH" -F "plugins=a:0:{}" -F "server=$OCTOBERCMS_SERVER_HASH")
+   -F "build=$OCTOBERCMS_BUILD" -F "core=$OCTOBERCMS_CORE_HASH" -F "plugins=a:0:{}" -F "server=$OCTOBERCMS_SERVER_HASH" -F "edge=$EDGE")
 OCTOBER_API_UPDATES=$( echo "$OCTOBER_API_RESPONSE" | jq '. | { build: .core.build, hash: .core.hash, update: .update, updates: .core.updates }')
+
 
 # Exit if no updates.
 if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
   echo "up to date" && exit 0;
+fi
+
+if [ $EDGE -eq 1 ]; then
+  echo -e "\n "
+  echo "$OCTOBER_API_UPDATES" | jq -r '.updates | to_entries[] |  "   " + .key + ": " + .value'
+  echo -e "\n - Edge updates for review only. No updates applied." && exit 0
 fi
 
 echo -e "\n - Fetching GitHub repository for latest commit hash..."
