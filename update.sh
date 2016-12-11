@@ -24,51 +24,6 @@ function check_october {
   OCTOBER_API_UPDATES=$( echo "$OCTOBER_API_RESPONSE" | jq '. | { build: .core.build, hash: .core.hash, update: .update, updates: .core.updates }')
 }
 
-echo " - Querying October CMS API for updates..."
-check_october
-
-if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
-  STABLE_BUILD=$OCTOBERCMS_BUILD
-  STABLE_CORE_HASH=$OCTOBERCMS_CORE_HASH
-  STABLE_UPDATE=0
-  echo "    No STABLE build updates";
-else
-  STABLE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
-  STABLE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
-  STABLE_UPDATE=1
-  echo "    New STABLE build ($OCTOBERCMS_BUILD -> $STABLE_BUILD)";
-fi
-
-echo "     STABLE Build: $STABLE_BUILD"
-echo "     STABLE core hash: $STABLE_CORE_HASH"
-
-# Check EDGE updates
-echo " - Querying October CMS API for EDGE updates..."
-check_october edge
-
-if [ "$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')" -eq "$OCTOBERCMS_EDGE_BUILD" ]; then
-  EDGE_BUILD=$OCTOBERCMS_EDGE_BUILD
-  EDGE_CORE_HASH=$OCTOBERCMS_EDGE_CORE_HASH
-  EDGE_UPDATE=0
-  echo "    No EDGE build updates";
-else
-  EDGE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
-  EDGE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
-  EDGE_UPDATE=1
-  echo "    New EDGE build ($OCTOBERCMS_EDGE_BUILD -> $EDGE_BUILD)";
-fi
-
-echo "     EDGE Build: $EDGE_BUILD"
-echo "     EDGE core hash: $EDGE_CORE_HASH"
-
-echo " - Fetching GitHub repository for latest tag..."
-
-GITHUB_API_RESPONSE=$(curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags)
-GITHUB_LATEST_TAG=$( echo "$GITHUB_API_RESPONSE" | jq -r '.[0] | .name') || exit 1;
-GITHUB_EDGE_BUILD=${GITHUB_LATEST_TAG#*0.} #Strip v1.0.
-echo "     Latest repo tag: $GITHUB_LATEST_TAG"
-
-
 function update_checksum {
   echo " - Generating new checksum..."
   if [ -z "$1" ]; then
@@ -89,6 +44,44 @@ function update_checksum {
   rm $LATEST_ARCHIVE
 }
 
+echo " - Querying October CMS API for updates..."
+check_october
+
+if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
+  STABLE_UPDATE=0
+  echo "    No STABLE build updates ($OCTOBERCMS_BUILD)";
+else
+  STABLE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
+  STABLE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
+  STABLE_UPDATE=1
+  echo "    New STABLE build ($OCTOBERCMS_BUILD -> $STABLE_BUILD)";
+  echo "     STABLE Build: $STABLE_BUILD"
+  echo "     STABLE core hash: $STABLE_CORE_HASH"
+fi
+
+# Check EDGE updates
+echo " - Querying October CMS API for EDGE updates..."
+check_october edge
+
+if [ "$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')" -eq "$OCTOBERCMS_EDGE_BUILD" ]; then
+  EDGE_UPDATE=0
+  echo "    No EDGE build updates ($OCTOBERCMS_EDGE_BUILD)";
+else
+  EDGE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
+  EDGE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
+  EDGE_UPDATE=1
+  echo "    New EDGE build ($OCTOBERCMS_EDGE_BUILD -> $EDGE_BUILD)";
+  echo "     EDGE Build: $EDGE_BUILD"
+  echo "     EDGE core hash: $EDGE_CORE_HASH"
+fi
+
+echo " - Fetching GitHub repository for latest tag..."
+
+GITHUB_API_RESPONSE=$(curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags)
+GITHUB_LATEST_TAG=$( echo "$GITHUB_API_RESPONSE" | jq -r '.[0] | .name') || exit 1;
+GITHUB_EDGE_BUILD=${GITHUB_LATEST_TAG#*0.} #Strip v1.0.
+echo "    Latest repo tag: $GITHUB_LATEST_TAG"
+
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   update_checksum "v1.0.$STABLE_BUILD"
   STABLE_CHECKSUM=$LATEST_ARCHIVE_CHECKSUM
@@ -107,22 +100,25 @@ else
   EDGE_CHECKSUM=$OCTOBERCMS_EDGE_CHECKSUM
 fi
 
-if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ] || [ "$STABLE_UPDATE" -eq 0 ]; then
-  echo " - No new STABLE build, core hash or checksum";
-else
-  echo " - Setting new build values..."
-  echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
-  echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
-  echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
+if [ "$STABLE_UPDATE" -eq 1 ]; then
+  if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ]; then
+    echo " - No STABLE build, core hash or checksum";
+  else
+    echo " - Setting new build values..."
+    echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
+    echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
+    echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
+  fi
 fi
-
-if [ -z "$EDGE_BUILD" ] || [ -z "$EDGE_CORE_HASH" ] || [ -z "$EDGE_CHECKSUM" ] || [ "$EDGE_UPDATE" -eq 0 ]; then
-  echo " - No new EDGE build, core hash or checksum";
-else
-  echo " - Setting EDGE build values..."
-  echo "    OCTOBERCMS_EDGE_BUILD: $EDGE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_BUILD\s*=\s*\).*$/\1$EDGE_BUILD/" version
-  echo "    OCTOBERCMS_EDGE_CORE_HASH: $EDGE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CORE_HASH\s*=\s*\).*$/\1$EDGE_CORE_HASH/" version
-  echo "    OCTOBERCMS_EDGE_CHECKSUM: $EDGE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CHECKSUM\s*=\s*\).*$/\1$EDGE_CHECKSUM/" version
+if [ "$EDGE_UPDATE" -eq 1 ]; then
+  if [ -z "$EDGE_BUILD" ] || [ -z "$EDGE_CORE_HASH" ] || [ -z "$EDGE_CHECKSUM" ]; then
+    echo " - No new EDGE build, core hash or checksum";
+  else
+    echo " - Setting EDGE build values..."
+    echo "    OCTOBERCMS_EDGE_BUILD: $EDGE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_BUILD\s*=\s*\).*$/\1$EDGE_BUILD/" version
+    echo "    OCTOBERCMS_EDGE_CORE_HASH: $EDGE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CORE_HASH\s*=\s*\).*$/\1$EDGE_CORE_HASH/" version
+    echo "    OCTOBERCMS_EDGE_CHECKSUM: $EDGE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CHECKSUM\s*=\s*\).*$/\1$EDGE_CHECKSUM/" version
+  fi
 fi
 
 echo " - Update complete." && exit 0;
