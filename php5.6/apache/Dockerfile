@@ -23,11 +23,10 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 RUN a2enmod rewrite
 
-ENV OCTOBERCMS_BUILD 382
-ENV OCTOBERCMS_COMMIT_HASH 97b0bc481f948045f96a420bb54ab48628bfdddc
-ENV OCTOBERCMS_CHECKSUM a2542641aade3a5d1cec8c11d34d03e927a75fa2
+ENV OCTOBERCMS_TAG 1.0.382
+ENV OCTOBERCMS_CHECKSUM 99923196c13ce67365322dd7e293c84a723c21d9
 
-RUN curl -o octobercms.tar.gz -fSL https://github.com/octobercms/october/archive/{$OCTOBERCMS_COMMIT_HASH}.tar.gz \
+RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
 	&& tar -xzf octobercms.tar.gz \
   && find "october-$OCTOBERCMS_COMMIT_HASH" -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
