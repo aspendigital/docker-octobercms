@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y git-core \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
   && docker-php-ext-install gd mysqli mcrypt zip pdo pdo_mysql pdo_sqlite opcache
 
-# set recommended PHP.ini settings
+# recommended opcache PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
 		echo 'opcache.memory_consumption=128'; \
@@ -21,14 +21,17 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 
-ENV OCTOBERCMS_TAG 1.0.382
-ENV OCTOBERCMS_CHECKSUM 99923196c13ce67365322dd7e293c84a723c21d9
+
+
+ENV OCTOBERCMS_TAG v1.0.393
+ENV OCTOBERCMS_CHECKSUM 1953e4b1241bc5e320c213d2569164e6b669fa68
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
 	&& tar -xzf octobercms.tar.gz \
-  && find "october-$OCTOBERCMS_COMMIT_HASH" -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
-  && rmdir "october-$OCTOBERCMS_COMMIT_HASH" \
+  && OCTOBER_TMP_FOLDER=$(ls -d octobercms*/) \
+  && find $OCTOBER_TMP_FOLDER -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
+  && rmdir $OCTOBER_TMP_FOLDER \
 	&& rm octobercms.tar.gz
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts

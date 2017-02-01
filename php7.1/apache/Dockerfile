@@ -1,4 +1,4 @@
-FROM php:5.6-fpm
+FROM php:7.1-apache
 MAINTAINER Aspen Digital <info@aspendigital.com>
 
 RUN apt-get update && apt-get install -y git-core \
@@ -21,7 +21,7 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
 
-
+RUN a2enmod rewrite
 
 ENV OCTOBERCMS_TAG v1.0.393
 ENV OCTOBERCMS_CHECKSUM 1953e4b1241bc5e320c213d2569164e6b669fa68
@@ -40,4 +40,4 @@ COPY docker-entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]

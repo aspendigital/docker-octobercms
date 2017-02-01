@@ -6,8 +6,8 @@ if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
 if ! hash jq 2>&-; then echo "Error: jq is required" && exit 1; fi
 if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl/sha1sum is required" && exit 1; fi } fi
 
-# Pull in current build values
-source version
+# Load cached version if not forced
+[ "$1" = "force" ] && echo ' - Force Update' || source version
 
 function check_october {
   [ "$1" = "edge" ] && EDGE=1 || EDGE=0
@@ -59,27 +59,10 @@ else
   echo "     STABLE core hash: $STABLE_CORE_HASH"
 fi
 
-# Check EDGE updates
-echo " - Querying October CMS API for EDGE updates..."
-check_october edge
-
-if [ "$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')" -eq "$OCTOBERCMS_EDGE_BUILD" ]; then
-  EDGE_UPDATE=0
-  echo "    No EDGE build updates ($OCTOBERCMS_EDGE_BUILD)";
-else
-  EDGE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
-  EDGE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
-  EDGE_UPDATE=1
-  echo "    New EDGE build ($OCTOBERCMS_EDGE_BUILD -> $EDGE_BUILD)";
-  echo "     EDGE Build: $EDGE_BUILD"
-  echo "     EDGE core hash: $EDGE_CORE_HASH"
-fi
-
 echo " - Fetching GitHub repository for latest tag..."
 
 GITHUB_API_RESPONSE=$(curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags)
 GITHUB_LATEST_TAG=$( echo "$GITHUB_API_RESPONSE" | jq -r '.[0] | .name') || exit 1;
-GITHUB_EDGE_BUILD=${GITHUB_LATEST_TAG#*0.} #Strip v1.0.
 echo "    Latest repo tag: $GITHUB_LATEST_TAG"
 
 if [ "$STABLE_UPDATE" -eq 1 ]; then
@@ -89,16 +72,44 @@ else
   STABLE_CHECKSUM=$OCTOBERCMS_CHECKSUM
 fi
 
-if [ "$EDGE_UPDATE" -eq 1 ]; then
-  if [ "$GITHUB_EDGE_BUILD" -eq "$EDGE_BUILD" ]; then
-    update_checksum $GITHUB_LATEST_TAG
-    EDGE_CHECKSUM=$LATEST_ARCHIVE_CHECKSUM
-  else
-    echo "Error: October CMS API and the GitHub repo's latest tag do not match. Aborting..." && exit 1;
-  fi
-else
-  EDGE_CHECKSUM=$OCTOBERCMS_EDGE_CHECKSUM
-fi
+function update_dockerfiles {
+
+  current_tag="v1.0.$STABLE_BUILD"
+  checksum=$STABLE_CHECKSUM
+
+	phpVersions=( php*.*/ )
+  phpVersions=( "${phpVersions[@]%/}" )
+
+  for phpVersion in "${phpVersions[@]}"; do
+    echo $phpVersion
+  	phpVersionDir="$phpVersion"
+  	phpVersion="${phpVersion#php}"
+
+  	for variant in apache fpm; do
+  		dir="$phpVersionDir/$variant"
+  		mkdir -p "$dir"
+
+  		if [ "$variant" == "apache" ]; then
+  			extras="RUN a2enmod rewrite"
+  			cmd="apache2-foreground"
+  		elif [ "$variant" == "fpm" ]; then
+  			extras=""
+  			cmd="php-fpm"
+  		fi
+
+			sed \
+				-e 's!%%OCTOBERCMS_TAG%%!'"$current_tag"'!g' \
+				-e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
+				-e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
+				-e 's!%%VARIANT%%!'"$variant"'!g' \
+				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
+				-e 's!%%CMD%%!'"$cmd"'!g' \
+				Dockerfile.template > "$dir/Dockerfile"
+
+  			cp docker-entrypoint.sh "$dir/docker-entrypoint.sh"
+  	done
+  done
+}
 
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ]; then
@@ -108,16 +119,7 @@ if [ "$STABLE_UPDATE" -eq 1 ]; then
     echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
     echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
     echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
-  fi
-fi
-if [ "$EDGE_UPDATE" -eq 1 ]; then
-  if [ -z "$EDGE_BUILD" ] || [ -z "$EDGE_CORE_HASH" ] || [ -z "$EDGE_CHECKSUM" ]; then
-    echo " - No new EDGE build, core hash or checksum";
-  else
-    echo " - Setting EDGE build values..."
-    echo "    OCTOBERCMS_EDGE_BUILD: $EDGE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_BUILD\s*=\s*\).*$/\1$EDGE_BUILD/" version
-    echo "    OCTOBERCMS_EDGE_CORE_HASH: $EDGE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CORE_HASH\s*=\s*\).*$/\1$EDGE_CORE_HASH/" version
-    echo "    OCTOBERCMS_EDGE_CHECKSUM: $EDGE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_EDGE_CHECKSUM\s*=\s*\).*$/\1$EDGE_CHECKSUM/" version
+    update_dockerfiles
   fi
 fi
 

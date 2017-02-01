@@ -1,4 +1,4 @@
-FROM php:5.6-fpm
+FROM php:7.1-fpm
 MAINTAINER Aspen Digital <info@aspendigital.com>
 
 RUN apt-get update && apt-get install -y git-core \

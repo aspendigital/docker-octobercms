@@ -20,6 +20,7 @@ RUN { \
 
 RUN curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/composer
+
 %%VARIANT_EXTRAS%%
 
 ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
@@ -28,8 +29,9 @@ ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
 	&& tar -xzf octobercms.tar.gz \
-  && find "october-$OCTOBERCMS_COMMIT_HASH" -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
-  && rmdir "october-$OCTOBERCMS_COMMIT_HASH" \
+  && OCTOBER_TMP_FOLDER=$(ls -d octobercms*/) \
+  && find $OCTOBER_TMP_FOLDER -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
+  && rmdir $OCTOBER_TMP_FOLDER \
 	&& rm octobercms.tar.gz
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
