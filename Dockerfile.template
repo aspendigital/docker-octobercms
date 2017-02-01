@@ -19,7 +19,7 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 RUN curl -sS https://getcomposer.org/installer | php \
-        && mv composer.phar /usr/local/bin/composer
+  && mv composer.phar /usr/local/bin/composer
 
 %%VARIANT_EXTRAS%%
 
@@ -28,11 +28,11 @@ ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
-	&& tar -xzf octobercms.tar.gz \
+  && tar -xzf octobercms.tar.gz \
   && OCTOBER_TMP_FOLDER=$(ls -d octobercms*/) \
   && find $OCTOBER_TMP_FOLDER -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
   && rmdir $OCTOBER_TMP_FOLDER \
-	&& rm octobercms.tar.gz
+  && rm octobercms.tar.gz
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
 

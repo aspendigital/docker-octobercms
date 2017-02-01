@@ -9,6 +9,12 @@ if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl
 # Load cached version if not forced
 [ "$1" = "force" ] && echo ' - Force Update' || source version
 
+function join {
+	local sep="$1"; shift
+	local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
+	echo "${out#$sep}"
+}
+
 function check_october {
   [ "$1" = "edge" ] && EDGE=1 || EDGE=0
 
@@ -81,7 +87,6 @@ function update_dockerfiles {
   phpVersions=( "${phpVersions[@]%/}" )
 
   for phpVersion in "${phpVersions[@]}"; do
-    echo $phpVersion
   	phpVersionDir="$phpVersion"
   	phpVersion="${phpVersion#php}"
 
@@ -111,6 +116,52 @@ function update_dockerfiles {
   done
 }
 
+function update_buildtags {
+
+  defaultPhpVersion='php7.1'
+  defaultVariant='apache'
+
+  phpFolders=( php*.*/ )
+  phpVersions=()
+  # process in descending order
+  for (( idx=${#phpFolders[@]}-1 ; idx>=0 ; idx-- )) ; do
+  	phpVersions+=( "${phpFolders[idx]%/}" )
+  done
+
+  sed -i '' -e '/## Supported tags/,$d' README.md
+  echo -e "## Supported tags\n\n" >> README.md
+
+  for phpVersion in "${phpVersions[@]}"; do
+  	for variant in apache fpm; do
+  		dir="$phpVersion/$variant"
+  		[ -f "$dir/Dockerfile" ] || continue
+
+  		fullVersion="$(cat "$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_TAG" { print $3; exit }')"
+  		fullVersion=build.${fullVersion#*v1.0.}
+
+  		versionAliases=()
+  		versionAliases+=(
+  			$fullVersion
+  			latest
+  		)
+
+  		phpVersionVariantAliases=( "${versionAliases[@]/%/-$phpVersion-$variant}" )
+  		phpVersionVariantAliases=( "${phpVersionVariantAliases[@]//latest-/}" )
+
+  		fullAliases=(
+  			"${phpVersionVariantAliases[@]}"
+  		)
+
+  		if [ "$phpVersion" = "$defaultPhpVersion" ]; then
+  			if [ "$variant" = "$defaultVariant" ]; then
+  				fullAliases+=( "${versionAliases[@]}" )
+  			fi
+  		fi
+  		echo "- "$(join ', ' "${fullAliases[@]}")": [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)" >> README.md
+  	done
+  done
+}
+
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ]; then
     echo " - No STABLE build, core hash or checksum";
@@ -120,6 +171,7 @@ if [ "$STABLE_UPDATE" -eq 1 ]; then
     echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
     echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
     update_dockerfiles
+    update_buildtags
   fi
 fi
 
