@@ -128,7 +128,7 @@ function update_buildtags {
   	phpVersions+=( "${phpFolders[idx]%/}" )
   done
 
-  sed -i '' -e '/## Supported tags/,$d' README.md
+  sed -i '/## Supported tags/,$d' README.md
   echo -e "## Supported tags\n\n" >> README.md
 
   for phpVersion in "${phpVersions[@]}"; do
@@ -162,16 +162,26 @@ function update_buildtags {
   done
 }
 
+function update_repo {
+  # commit changes to repository
+	echo " - Committing changes to repo..."
+  git add php*/*/Dockerfile README.md version
+  git commit -m "Build $STABLE_BUILD" -m "Automated update"
+  git tag "build.$STABLE_BUILD"
+  git push && git push --tags
+}
+
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ]; then
     echo " - No STABLE build, core hash or checksum";
   else
     echo " - Setting new build values..."
-    echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i '' -e "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
-    echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i '' -e "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
-    echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i '' -e "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
+    echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
+    echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
+    echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
     update_dockerfiles
     update_buildtags
+    update_repo
   fi
 fi
 
