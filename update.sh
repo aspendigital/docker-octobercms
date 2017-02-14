@@ -6,6 +6,8 @@ if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
 if ! hash jq 2>&-; then echo "Error: jq is required" && exit 1; fi
 if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl/sha1sum is required" && exit 1; fi } fi
 
+echo Automat: `date`
+
 # Load cached version if not forced
 [ "$1" = "force" ] && echo ' - Force Update' || source version
 
@@ -182,6 +184,14 @@ if [ "$STABLE_UPDATE" -eq 1 ]; then
     update_dockerfiles
     update_buildtags
     update_repo
+
+    if [ "$SLACK_WEBHOOK_URL" ]; then
+	    echo -n " - Posting update to Slack..."
+	    curl -X POST -fsS --connect-timeout 15 --data-urlencode "payload={
+		    'text': 'October CMS Build $STABLE_BUILD.',
+	    }" $SLACK_WEBHOOK_URL
+	    echo -e ""
+    fi
   fi
 fi
 
