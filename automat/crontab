@@ -1,0 +1,1 @@
+0 */3 * * * (cd /docker-octobercms; exec bash update.sh)
