@@ -1,0 +1,26 @@
+language: bash
+services: docker
+
+env:
+  - VARIANT=php5.6/apache
+  - VARIANT=php5.6/fpm
+  - VARIANT=php7.0/apache
+  - VARIANT=php7.0/fpm
+  - VARIANT=php7.1/apache
+  - VARIANT=php7.1/fpm
+
+install:
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+
+before_script:
+  - env | sort
+  - cd "$VARIANT"
+  - slash='/'; image="aspendigital/octobercms:${VARIANT//$slash/-}"
+
+script:
+  - docker build -t "$image" .
+  - ~/official-images/test/run.sh "$image"
+  - docker run --rm "$image" vendor/bin/phpunit
+
+after_script:
+  - docker images
