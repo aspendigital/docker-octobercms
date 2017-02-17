@@ -40,6 +40,13 @@ RUN echo "Update composer.json: Require dependencies of the same build" \
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
 
+RUN curl -o plugins/october-docker-master.tar.gz -fSL https://codeload.github.com/aspendigital/october-docker/tar.gz/master \
+  && tar -xzf plugins/october-docker-master.tar.gz -C plugins \
+  && mkdir plugins/aspendigital \
+  && mv plugins/october-docker-master plugins/aspendigital/docker \
+  && rm plugins/october-docker-master.tar.gz \
+  && php artisan docker:up
+
 RUN chown -R www-data:www-data /var/www/html
 
 CMD ["php-fpm"]
