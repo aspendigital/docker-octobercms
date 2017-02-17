@@ -113,7 +113,6 @@ function update_dockerfiles {
 				-e 's!%%CMD%%!'"$cmd"'!g' \
 				Dockerfile.template > "$dir/Dockerfile"
 
-  			cp docker-entrypoint.sh "$dir/docker-entrypoint.sh"
   	done
   done
 }

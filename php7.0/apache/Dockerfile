@@ -40,8 +40,6 @@ RUN echo "Update composer.json: Require dependencies of the same build" \
 
 RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
 
-COPY docker-entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+RUN chown -R www-data:www-data /var/www/html
 
 CMD ["apache2-foreground"]
