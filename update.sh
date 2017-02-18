@@ -107,6 +107,8 @@ function update_dockerfiles {
 			sed \
 				-e 's!%%OCTOBERCMS_TAG%%!'"$current_tag"'!g' \
 				-e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
+				-e 's!%%OCTOBERCMS_CORE_HASH%%!'"$STABLE_CORE_HASH"'!g' \
+				-e 's!%%OCTOBERCMS_CORE_BUILD%%!'"$STABLE_BUILD"'!g' \
 				-e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
 				-e 's!%%VARIANT%%!'"$variant"'!g' \
 				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \

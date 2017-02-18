@@ -25,6 +25,8 @@ RUN curl -sS https://getcomposer.org/installer | php \
 
 ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
 ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
+ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
+ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \

@@ -25,6 +25,8 @@ RUN a2enmod rewrite
 
 ENV OCTOBERCMS_TAG v1.0.396
 ENV OCTOBERCMS_CHECKSUM 2fe1ae8ebecc959c5c1204962fe4a10ea609b756
+ENV OCTOBERCMS_CORE_BUILD 396
+ENV OCTOBERCMS_CORE_HASH ff812962c9de7932015f2f6620d2ca3b
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
