@@ -1,5 +1,7 @@
 # Docker + October CMS
 
+[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms)
+
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
 Based on [official docker PHP images](https://github.com/docker-library/php), images include dependencies required by October, Composer and install the [latest release](https://github.com/octobercms/october).
