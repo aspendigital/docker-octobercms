@@ -18,8 +18,8 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-RUN curl -sS https://getcomposer.org/installer | php \
-  && mv composer.phar /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+  && /usr/local/bin/composer global require hirak/prestissimo
 
 
 
@@ -28,27 +28,42 @@ ENV OCTOBERCMS_CHECKSUM 2fe1ae8ebecc959c5c1204962fe4a10ea609b756
 ENV OCTOBERCMS_CORE_BUILD 396
 ENV OCTOBERCMS_CORE_HASH ff812962c9de7932015f2f6620d2ca3b
 
+ENV DOCKER_PLUGIN v1.0.5
+ENV DOCKER_PLUGIN_CHECKSUM dafaaab4f07a0a4a6e9978fdd11bb04e2d742ce7
+
+# Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
   && tar -xzf octobercms.tar.gz \
   && OCTOBER_TMP_FOLDER=$(ls -d octobercms*/) \
   && find $OCTOBER_TMP_FOLDER -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
   && rmdir $OCTOBER_TMP_FOLDER \
-  && rm octobercms.tar.gz
-
-RUN echo "Update composer.json: Require dependencies of the same build" \
-  && sed -i "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"${OCTOBERCMS_TAG#v}\"/g" composer.json \
-  && egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json
-
-RUN composer install --no-interaction --prefer-dist --no-plugins --no-scripts
-
-RUN curl -o plugins/october-docker-master.tar.gz -fSL https://codeload.github.com/aspendigital/october-docker/tar.gz/master \
-  && tar -xzf plugins/october-docker-master.tar.gz -C plugins \
+  && rm octobercms.tar.gz \
+  # match build dependencies
+  && echo "Update composer.json: Require dependencies of the same build" \
+  && sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"${OCTOBERCMS_TAG#v}\"/g" composer.json \
+  && egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json \
+  && composer install --no-interaction --prefer-dist --no-scripts \
+  # setup docker env
+  && echo 'APP_ENV=docker' > .env \
+  && mkdir config/docker \
+  && echo "<?php return ['edgeUpdates' => false, 'disableCoreUpdates' => true];" > config/docker/cms.php \
+  && echo "<?php return ['default' => 'sqlite'];" > config/docker/database.php \
+  && echo "<?php return ['driver' => 'log'];" > config/docker/mail.php \
+  # setup database
+  && touch storage/database.sqlite \
+  && chmod 666 storage/database.sqlite \
+  && php artisan october:up \
+  # docker plugin - set build params
+  && curl -o plugins/october-docker.tar.gz -fSL https://codeload.github.com/aspendigital/october-docker/legacy.tar.gz/{$DOCKER_PLUGIN} \
+  && echo "$DOCKER_PLUGIN_CHECKSUM *plugins/october-docker.tar.gz" | sha1sum -c - \
+  && tar -xzf plugins/october-docker.tar.gz -C plugins \
   && mkdir plugins/aspendigital \
-  && mv plugins/october-docker-master plugins/aspendigital/docker \
-  && rm plugins/october-docker-master.tar.gz \
-  && php artisan docker:up
-
-RUN chown -R www-data:www-data /var/www/html
+  && DOCKER_PLUGIN_TMP_FOLDER=$(ls -d plugins/aspendigital-october-docker*/) \
+  && mv $DOCKER_PLUGIN_TMP_FOLDER plugins/aspendigital/docker \
+  && rm plugins/october-docker.tar.gz \
+  && php artisan docker:up \
+  # permissions
+  && chown -R www-data:www-data /var/www/html
 
 CMD ["php-fpm"]
