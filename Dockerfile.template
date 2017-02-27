@@ -28,9 +28,6 @@ ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
 ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
 ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
 
-ENV DOCKER_PLUGIN v1.0.5
-ENV DOCKER_PLUGIN_CHECKSUM dafaaab4f07a0a4a6e9978fdd11bb04e2d742ce7
-
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
   && echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - \
@@ -54,15 +51,13 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   && touch storage/database.sqlite \
   && chmod 666 storage/database.sqlite \
   && php artisan october:up \
-  # docker plugin - set build params
-  && curl -o plugins/october-docker.tar.gz -fSL https://codeload.github.com/aspendigital/october-docker/legacy.tar.gz/{$DOCKER_PLUGIN} \
-  && echo "$DOCKER_PLUGIN_CHECKSUM *plugins/october-docker.tar.gz" | sha1sum -c - \
-  && tar -xzf plugins/october-docker.tar.gz -C plugins \
-  && mkdir plugins/aspendigital \
-  && DOCKER_PLUGIN_TMP_FOLDER=$(ls -d plugins/aspendigital-october-docker*/) \
-  && mv $DOCKER_PLUGIN_TMP_FOLDER plugins/aspendigital/docker \
-  && rm plugins/october-docker.tar.gz \
-  && php artisan docker:up \
+  # set build params
+  && php -r "use System\\Models\\Parameter; \
+    require __DIR__.'/bootstrap/autoload.php'; \
+    \$app = require_once __DIR__.'/bootstrap/app.php'; \
+    \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
+    Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
+    echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" \
   # permissions
   && chown -R www-data:www-data /var/www/html
 

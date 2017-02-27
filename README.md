@@ -21,9 +21,7 @@ Based on [official docker PHP images](https://github.com/docker-library/php), im
 To run October CMS using Docker, start a container using the latest image, mapping your local port 80 to the container's port 80:
 
 ```shell
-
 $ docker run -p80:80 aspendigital/octobercms:latest
-
 ```
 
 
