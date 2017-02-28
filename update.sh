@@ -6,10 +6,20 @@ if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
 if ! hash jq 2>&-; then echo "Error: jq is required" && exit 1; fi
 if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl/sha1sum is required" && exit 1; fi } fi
 
+while true; do
+  case "$1" in
+    --force)  FORCE=1; shift ;;
+    --test)   TEST=1; shift ;;
+    *)
+      break
+  esac
+done
+
 echo Automat: `date`
 
+[ "$TEST" ] && echo ' - Test mode'
 # Load cached version if not forced
-[ "$1" = "force" ] && echo ' - Force Update' || source version
+[ "$FORCE" ] && echo ' - Force update' || source version
 
 function join {
 	local sep="$1"; shift
@@ -187,7 +197,7 @@ if [ "$STABLE_UPDATE" -eq 1 ]; then
     echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && echo "OCTOBERCMS_CHECKSUM=$STABLE_CHECKSUM" >> version
     update_dockerfiles
     update_buildtags
-    update_repo
+    [ "$TEST" ] && echo ' - Testing. No changes committed.' || update_repo
 
     if [ "$SLACK_WEBHOOK_URL" ]; then
 	    echo -n " - Posting update to Slack..."
