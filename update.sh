@@ -131,8 +131,7 @@ function update_buildtags {
   	phpVersions+=( "${phpFolders[idx]%/}" )
   done
 
-  sed -i '/## Supported tags/,$d' README.md
-  echo -e "## Supported tags\n\n" >> README.md
+  tagsMarkdown=()
 
   for phpVersion in "${phpVersions[@]}"; do
   	for variant in apache fpm; do
@@ -160,9 +159,15 @@ function update_buildtags {
   				fullAliases+=( "${versionAliases[@]}" )
   			fi
   		fi
-  		echo "- "$(join ', ' "${fullAliases[@]}")": [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)" >> README.md
+  		tagsMarkdown+="- "$(join ', ' "${fullAliases[@]}")": [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
   	done
   done
+
+	# Recreate README.md
+	sed '/Supported Tags/q' README.md > README_TMP.md
+	echo -e "\n${tagsMarkdown[@]}" >> README_TMP.md
+	sed -n -e '/Quick Start/,$p' README.md >> README_TMP.md
+	mv README_TMP.md README.md
 }
 
 function update_repo {

@@ -6,8 +6,7 @@ The docker images defined in this repository serve as a starting point for [Octo
 
 Based on [official docker PHP images](https://github.com/docker-library/php), images include dependencies required by October, Composer and install the [latest release](https://github.com/octobercms/october).
 
-## Supported tags
-
+## Supported Tags
 
 - `build.396-php7.1-apache`, `php7.1-apache`, `build.396`, `latest`: [php7.1/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile)
 - `build.396-php7.1-fpm`, `php7.1-fpm`: [php7.1/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile)
