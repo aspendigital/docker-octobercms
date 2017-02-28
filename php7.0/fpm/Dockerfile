@@ -2,10 +2,10 @@ FROM php:7.0-fpm
 MAINTAINER Aspen Digital <info@aspendigital.com>
 
 RUN apt-get update && apt-get install -y git-core \
-  libsqlite3-dev libpq-dev libmcrypt-dev libpng12-dev libjpeg-dev \
+  libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev \
   && rm -rf /var/lib/apt/lists/* \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-  && docker-php-ext-install gd mysqli mcrypt zip pdo pdo_mysql pdo_sqlite opcache
+  && docker-php-ext-install gd mcrypt mysqli opcache pdo pdo_pgsql pdo_mysql pdo_sqlite zip
 
 # recommended opcache PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
