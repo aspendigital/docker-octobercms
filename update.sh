@@ -131,8 +131,6 @@ function update_buildtags {
   	phpVersions+=( "${phpFolders[idx]%/}" )
   done
 
-  tagsMarkdown=()
-
   for phpVersion in "${phpVersions[@]}"; do
   	for variant in apache fpm; do
   		dir="$phpVersion/$variant"
@@ -184,9 +182,9 @@ if [ "$STABLE_UPDATE" -eq 1 ]; then
     echo " - No STABLE build, core hash or checksum";
   else
     echo " - Setting new build values..."
-    echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && sed -i "s/^\(OCTOBERCMS_BUILD\s*=\s*\).*$/\1$STABLE_BUILD/" version
-    echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && sed -i "s/^\(OCTOBERCMS_CORE_HASH\s*=\s*\).*$/\1$STABLE_CORE_HASH/" version
-    echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && sed -i "s/^\(OCTOBERCMS_CHECKSUM\s*=\s*\).*$/\1$STABLE_CHECKSUM/" version
+    echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && echo "OCTOBERCMS_BUILD=$STABLE_BUILD" > version
+    echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && echo "OCTOBERCMS_CORE_HASH=$STABLE_CORE_HASH" >> version
+    echo "    OCTOBERCMS_CHECKSUM: $STABLE_CHECKSUM" && echo "OCTOBERCMS_CHECKSUM=$STABLE_CHECKSUM" >> version
     update_dockerfiles
     update_buildtags
     update_repo
