@@ -1,5 +1,4 @@
 FROM php:7.1-apache
-MAINTAINER Aspen Digital <info@aspendigital.com>
 
 RUN apt-get update && apt-get install -y git-core \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev \
