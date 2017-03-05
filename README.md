@@ -1,6 +1,12 @@
+
+<p align="center"><img alt="Docker Utilities Plugin" style="padding-top: 15px" src="https://raw.githubusercontent.com/aspendigital/docker-octobercms/master/aspendigital-octobercms-docker-logo.png"></p>
+
 # Docker + October CMS
 
 [![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms)
+
+[![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/)
+
 
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
