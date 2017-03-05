@@ -1,16 +1,11 @@
-
-<p align="center"><img alt="Docker Utilities Plugin" style="padding-top: 15px" src="https://raw.githubusercontent.com/aspendigital/docker-octobercms/master/aspendigital-octobercms-docker-logo.png"></p>
-
 # Docker + October CMS
 
-[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms)
-
-[![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/)
+[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms) [![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/) [![October CMS Build 396](https://img.shields.io/badge/October%20CMS%20Build-396-red.svg)](https://octobercms) 
 
 
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
-Based on [official docker PHP images](https://github.com/docker-library/php), images include dependencies required by October, Composer and install the [latest release](https://github.com/octobercms/october).
+Based on [official docker PHP images](https://github.com/docker-library/php), images include dependencies required by October, Composer and install the [latest stable release](https://github.com/octobercms/october).
 
 ## Supported Tags
 
@@ -38,3 +33,6 @@ $ docker run -p80:80 -d --name october aspendigital/octobercms:latest
 
 $ docker exec -it october bash
 ```
+---
+
+![October](https://raw.githubusercontent.com/aspendigital/docker-octobercms/master/aspendigital-octobercms-docker-logo.png)

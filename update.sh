@@ -172,7 +172,7 @@ function update_buildtags {
   done
 
 	# Recreate README.md
-	sed '/Supported Tags/q' README.md > README_TMP.md
+	sed '/Supported Tags/q' README.md | sed -e "s/CMS Build [0-9]*/CMS Build $STABLE_BUILD/" | sed -e "s/CMS%20Build-[0-9]*/CMS%20Build-$STABLE_BUILD/" > README_TMP.md
 	echo -e "\n${tagsMarkdown[@]}" >> README_TMP.md
 	sed -n -e '/Quick Start/,$p' README.md >> README_TMP.md
 	mv README_TMP.md README.md
