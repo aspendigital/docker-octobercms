@@ -15,7 +15,7 @@ while true; do
   esac
 done
 
-echo Automat: `date`
+echo "Automat: `date`"
 
 [ "$TEST" ] && echo ' - Test mode'
 # Load cached version if not forced
@@ -27,7 +27,7 @@ function join {
 	echo "${out#$sep}"
 }
 
-function check_october {
+function check_october() {
   [ "$1" = "edge" ] && EDGE=1 || EDGE=0
 
   # Host server PHP version - https://github.com/octobercms/october/blob/97b0bc481f948045f96a420bb54ab48628bfdddc/modules/system/classes/UpdateManager.php#L835
@@ -50,7 +50,7 @@ function update_checksum {
     TAG=$1;
   fi
   LATEST_ARCHIVE="octobercms-$TAG.tar.gz"
-  curl -o $LATEST_ARCHIVE -fS#L --connect-timeout 15 https://codeload.github.com/octobercms/october/legacy.tar.gz/{$TAG}
+  curl -o $LATEST_ARCHIVE -fS#L --connect-timeout 15 https://codeload.github.com/octobercms/october/legacy.tar.gz/$TAG
   if hash sha1sum 2>&-; then
     LATEST_ARCHIVE_CHECKSUM=$(sha1sum $LATEST_ARCHIVE | awk '{print $1}')
   elif hash openssl 2>&-; then
@@ -167,13 +167,13 @@ function update_buildtags {
   				fullAliases+=( "${versionAliases[@]}" )
   			fi
   		fi
-  		tagsMarkdown+="- "$(join ', ' "${fullAliases[@]}")": [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
+  		tagsMarkdown+="- $(join ', ' "${fullAliases[@]}"): [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
   	done
   done
 
 	# Recreate README.md
 	sed '/Supported Tags/q' README.md | sed -e "s/CMS Build [0-9]*/CMS Build $STABLE_BUILD/" | sed -e "s/CMS%20Build-[0-9]*/CMS%20Build-$STABLE_BUILD/" > README_TMP.md
-	echo -e "\n${tagsMarkdown[@]}" >> README_TMP.md
+	echo -e "\n${tagsMarkdown[*]}" >> README_TMP.md
 	sed -n -e '/Quick Start/,$p' README.md >> README_TMP.md
 	mv README_TMP.md README.md
 }
