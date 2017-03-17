@@ -78,10 +78,8 @@ else
 fi
 
 echo " - Fetching GitHub repository for latest tag..."
-
-GITHUB_API_RESPONSE=$(curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags)
-GITHUB_LATEST_TAG=$( echo "$GITHUB_API_RESPONSE" | jq -r '.[0] | .name') || exit 1;
-echo "    Latest repo tag: $GITHUB_LATEST_TAG"
+GITHUB_LATEST_TAG=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags | jq -r '.[0] | .name') || exit 1;
+[ -z "$GITHUB_LATEST_TAG" ] && exit 1 || echo "    Latest repo tag: $GITHUB_LATEST_TAG";
 
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   update_checksum "v1.0.$STABLE_BUILD"
