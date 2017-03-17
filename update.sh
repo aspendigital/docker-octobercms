@@ -1,31 +1,15 @@
 #!/bin/bash
 set -e
 
-# Dependency check
+#####################
+### Dependency check
+
 if ! hash curl 2>&-; then echo "Error: curl is required" && exit 1; fi
 if ! hash jq 2>&-; then echo "Error: jq is required" && exit 1; fi
 if ! hash sha1sum 2>&-; then { if ! hash openssl 2>&-; then echo "Error: openssl/sha1sum is required" && exit 1; fi } fi
 
-while true; do
-  case "$1" in
-    --force)  FORCE=1; shift ;;
-    --test)   TEST=1; shift ;;
-    *)
-      break
-  esac
-done
-
-echo "Automat: `date`"
-
-[ "$TEST" ] && echo ' - Test mode'
-# Load cached version if not forced
-[ "$FORCE" ] && echo ' - Force update' || source version
-
-function join {
-	local sep="$1"; shift
-	local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
-	echo "${out#$sep}"
-}
+##############
+### Functions
 
 function check_october() {
   [ "$1" = "edge" ] && EDGE=1 || EDGE=0
@@ -61,32 +45,6 @@ function update_checksum {
   echo "     $TAG | $LATEST_ARCHIVE_CHECKSUM"
   rm $LATEST_ARCHIVE
 }
-
-echo " - Querying October CMS API for updates..."
-check_october
-
-if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
-  STABLE_UPDATE=0
-  echo "    No STABLE build updates ($OCTOBERCMS_BUILD)";
-else
-  STABLE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
-  STABLE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
-  STABLE_UPDATE=1
-  echo "    New STABLE build ($OCTOBERCMS_BUILD -> $STABLE_BUILD)";
-  echo "     STABLE Build: $STABLE_BUILD"
-  echo "     STABLE core hash: $STABLE_CORE_HASH"
-fi
-
-echo " - Fetching GitHub repository for latest tag..."
-GITHUB_LATEST_TAG=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags | jq -r '.[0] | .name') || exit 1;
-[ -z "$GITHUB_LATEST_TAG" ] && exit 1 || echo "    Latest repo tag: $GITHUB_LATEST_TAG";
-
-if [ "$STABLE_UPDATE" -eq 1 ]; then
-  update_checksum "v1.0.$STABLE_BUILD"
-  STABLE_CHECKSUM=$LATEST_ARCHIVE_CHECKSUM
-else
-  STABLE_CHECKSUM=$OCTOBERCMS_CHECKSUM
-fi
 
 function update_dockerfiles {
 
@@ -125,6 +83,12 @@ function update_dockerfiles {
 
   	done
   done
+}
+
+function join {
+	local sep="$1"; shift
+	local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
+	echo "${out#$sep}"
 }
 
 function update_buildtags {
@@ -184,6 +148,54 @@ function update_repo {
   git tag "build.$STABLE_BUILD"
   git push && git push --tags
 }
+
+#########################
+### Command line options
+
+while true; do
+  case "$1" in
+    --force)  FORCE=1; shift ;;
+    --test)   TEST=1; shift ;;
+    *)
+      break
+  esac
+done
+
+########
+### Run
+
+echo "Automat: `date`"
+
+[ "$TEST" ] && echo ' - Test mode'
+# Load cached version if not forced
+[ "$FORCE" ] && echo ' - Force update' || source version
+
+
+echo " - Querying October CMS API for updates..."
+check_october
+
+if [ "$(echo "$OCTOBER_API_RESPONSE" | jq -r '. | .update')" == "0" ]; then
+  STABLE_UPDATE=0
+  echo "    No STABLE build updates ($OCTOBERCMS_BUILD)";
+else
+  STABLE_BUILD=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .build')
+  STABLE_CORE_HASH=$(echo "$OCTOBER_API_UPDATES" | jq -r '. | .hash')
+  STABLE_UPDATE=1
+  echo "    New STABLE build ($OCTOBERCMS_BUILD -> $STABLE_BUILD)";
+  echo "     STABLE Build: $STABLE_BUILD"
+  echo "     STABLE core hash: $STABLE_CORE_HASH"
+fi
+
+echo " - Fetching GitHub repository for latest tag..."
+GITHUB_LATEST_TAG=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags | jq -r '.[0] | .name') || exit 1;
+[ -z "$GITHUB_LATEST_TAG" ] && exit 1 || echo "    Latest repo tag: $GITHUB_LATEST_TAG";
+
+if [ "$STABLE_UPDATE" -eq 1 ]; then
+  update_checksum "v1.0.$STABLE_BUILD"
+  STABLE_CHECKSUM=$LATEST_ARCHIVE_CHECKSUM
+else
+  STABLE_CHECKSUM=$OCTOBERCMS_CHECKSUM
+fi
 
 if [ "$STABLE_UPDATE" -eq 1 ]; then
   if [ -z "$STABLE_BUILD" ] || [ -z "$STABLE_CORE_HASH" ] || [ -z "$STABLE_CHECKSUM" ]; then
