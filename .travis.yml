@@ -2,12 +2,36 @@ language: bash
 services: docker
 
 env:
-  - VARIANT=php5.6/apache
-  - VARIANT=php5.6/fpm
-  - VARIANT=php7.0/apache
-  - VARIANT=php7.0/fpm
-  - VARIANT=php7.1/apache
-  - VARIANT=php7.1/fpm
+  matrix:
+    - VARIANT=php5.6/apache
+      BRANCH=stable
+    - VARIANT=php5.6/apache
+      BRANCH=edge
+
+    - VARIANT=php5.6/fpm
+      BRANCH=stable
+    - VARIANT=php5.6/fpm
+      BRANCH=edge
+
+    - VARIANT=php7.0/apache
+      BRANCH=stable
+    - VARIANT=php7.0/apache
+      BRANCH=edge
+
+    - VARIANT=php7.0/fpm
+      BRANCH=stable
+    - VARIANT=php7.0/fpm
+      BRANCH=edge
+
+    - VARIANT=php7.1/apache
+      BRANCH=stable
+    - VARIANT=php7.1/apache
+      BRANCH=edge
+
+    - VARIANT=php7.1/fpm
+      BRANCH=stable
+    - VARIANT=php7.1/fpm
+      BRANCH=edge
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -15,10 +39,12 @@ install:
 before_script:
   - env | sort
   - cd "$VARIANT"
-  - slash='/'; image="aspendigital/octobercms:${VARIANT//$slash/-}"
+  - if [ "$BRANCH" = "stable" ]; then prefix=""; else prefix="$BRANCH"; fi
+  - slash='/'; image="aspendigital/octobercms:$prefix${VARIANT//$slash/-}"
+  - if [ "$BRANCH" = "edge" ]; then dockerfile="Dockerfile.edge"; else dockerfile="Dockerfile"; fi
 
 script:
-  - docker build -t "$image" .
+  - docker build -t "$image" -f $dockerfile .
   - ~/official-images/test/run.sh "$image"
   - docker run --rm "$image" vendor/bin/phpunit
 
