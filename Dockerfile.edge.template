@@ -1,4 +1,4 @@
-FROM php:7.0-fpm
+FROM php:%%PHP_VERSION%%-%%VARIANT%%
 
 RUN apt-get update && apt-get install -y git-core \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev \
@@ -20,12 +20,12 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && /usr/local/bin/composer global require hirak/prestissimo
 
+%%VARIANT_EXTRAS%%
 
-
-ENV OCTOBERCMS_TAG v1.0.407
-ENV OCTOBERCMS_CHECKSUM 7322e27592a693537c33b7f10671485c61d7c6ec
-ENV OCTOBERCMS_CORE_BUILD 407
-ENV OCTOBERCMS_CORE_HASH bcefa286fc477f0ffcf134a6c7efe4b4
+ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
+ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
+ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
+ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
 
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
@@ -56,4 +56,4 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   # permissions
   && chown -R www-data:www-data /var/www/html
 
-CMD ["php-fpm"]
+CMD ["%%CMD%%"]

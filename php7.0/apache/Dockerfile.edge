@@ -22,10 +22,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN a2enmod rewrite
 
-ENV OCTOBERCMS_TAG v1.0.406
-ENV OCTOBERCMS_CHECKSUM 4b6053bfcb3018fd962c91110ff6bd0492838ba6
-ENV OCTOBERCMS_CORE_BUILD 406
-ENV OCTOBERCMS_CORE_HASH ab8146ab174a1e330f2953ca939b7851
+ENV OCTOBERCMS_TAG v1.0.407
+ENV OCTOBERCMS_CHECKSUM 7322e27592a693537c33b7f10671485c61d7c6ec
+ENV OCTOBERCMS_CORE_BUILD 407
+ENV OCTOBERCMS_CORE_HASH bcefa286fc477f0ffcf134a6c7efe4b4
 
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
@@ -35,10 +35,6 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   && find $OCTOBER_TMP_FOLDER -mindepth 1 -maxdepth 1 -exec mv -t . {} \; \
   && rmdir $OCTOBER_TMP_FOLDER \
   && rm octobercms.tar.gz \
-  # match build dependencies
-  && echo "Update composer.json: Require dependencies of the same build" \
-  && sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"${OCTOBERCMS_TAG#v}\"/g" composer.json \
-  && egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json \
   && composer install --no-interaction --prefer-dist --no-scripts \
   # setup docker env
   && echo 'APP_ENV=docker' > .env \

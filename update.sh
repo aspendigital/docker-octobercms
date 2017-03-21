@@ -84,7 +84,7 @@ function update_dockerfiles {
 				-e 's!%%VARIANT%%!'"$variant"'!g' \
 				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
 				-e 's!%%CMD%%!'"$cmd"'!g' \
-				Dockerfile.template > "$dir/Dockerfile$ext"
+				Dockerfile$ext.template > "$dir/Dockerfile$ext"
 
   	done
   done

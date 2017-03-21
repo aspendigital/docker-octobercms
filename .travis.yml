@@ -39,7 +39,7 @@ install:
 before_script:
   - env | sort
   - cd "$VARIANT"
-  - if [ "$BRANCH" = "stable" ]; then prefix=""; else prefix="$BRANCH"; fi
+  - if [ "$BRANCH" = "stable" ]; then prefix=""; else prefix="$BRANCH-"; fi
   - slash='/'; image="aspendigital/octobercms:$prefix${VARIANT//$slash/-}"
   - if [ "$BRANCH" = "edge" ]; then dockerfile="Dockerfile.edge"; else dockerfile="Dockerfile"; fi
 
