@@ -1,6 +1,6 @@
 # Docker + October CMS
 
-[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms) [![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/) [![October CMS Build 408](https://img.shields.io/badge/October%20CMS%20Build-408-red.svg)](https://octobercms.com/changelog) [![Edge Build 408](https://img.shields.io/badge/Edge%20Build-408-lightgrey.svg)](https://octobercms.com/changelog)
+[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms) [![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/) [![October CMS Build 408](https://img.shields.io/badge/October%20CMS%20Build-408-red.svg)](https://octobercms.com/changelog) [![Edge Build 409](https://img.shields.io/badge/Edge%20Build-409-lightgrey.svg)](https://octobercms.com/changelog)
 
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
@@ -18,12 +18,12 @@ Based on [official docker PHP images](https://github.com/docker-library/php), im
 
 ### Edge Build Tags
 
-- `build.408-php7.1-apache`, `edge-php7.1-apache`, `build.408`, `edge`: [php7.1/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.edge)
-- `build.408-php7.1-fpm`, `edge-php7.1-fpm`: [php7.1/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.edge)
-- `build.408-php7.0-apache`, `edge-php7.0-apache`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.edge)
-- `build.408-php7.0-fpm`, `edge-php7.0-fpm`: [php7.0/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.edge)
-- `build.408-php5.6-apache`, `edge-php5.6-apache`: [php5.6/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/apache/Dockerfile.edge)
-- `build.408-php5.6-fpm`, `edge-php5.6-fpm`: [php5.6/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/fpm/Dockerfile.edge)
+- `build.409-php7.1-apache`, `edge-php7.1-apache`, `build.409`, `edge`: [php7.1/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.edge)
+- `build.409-php7.1-fpm`, `edge-php7.1-fpm`: [php7.1/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.edge)
+- `build.409-php7.0-apache`, `edge-php7.0-apache`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.edge)
+- `build.409-php7.0-fpm`, `edge-php7.0-fpm`: [php7.0/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.edge)
+- `build.409-php5.6-apache`, `edge-php5.6-apache`: [php5.6/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/apache/Dockerfile.edge)
+- `build.409-php5.6-fpm`, `edge-php5.6-fpm`: [php5.6/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/fpm/Dockerfile.edge)
 
 ## Quick Start
 
