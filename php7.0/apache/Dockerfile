@@ -22,10 +22,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN a2enmod rewrite
 
-ENV OCTOBERCMS_TAG v1.0.408
-ENV OCTOBERCMS_CHECKSUM 00d75b03cebf3a3a2ab5ca39c0f64df546a2efd9
-ENV OCTOBERCMS_CORE_BUILD 408
-ENV OCTOBERCMS_CORE_HASH c95c404c7ec1af0bc2d19c07adb20e96
+ENV OCTOBERCMS_TAG v1.0.410
+ENV OCTOBERCMS_CHECKSUM 6b07c928be6c8a7dcf9f782c4216f5a848b408cb
+ENV OCTOBERCMS_CORE_BUILD 410
+ENV OCTOBERCMS_CORE_HASH 653d06b9433fec19c682d03921e35991
 
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
