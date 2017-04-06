@@ -1,6 +1,6 @@
 # Docker + October CMS
 
-[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms) [![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/) [![October CMS Build 411](https://img.shields.io/badge/October%20CMS%20Build-411-red.svg)](https://octobercms.com/changelog) [![Edge Build 411](https://img.shields.io/badge/Edge%20Build-411-lightgrey.svg)](https://octobercms.com/changelog)
+[![Build Status](https://travis-ci.org/aspendigital/docker-octobercms.svg?branch=master)](https://travis-ci.org/aspendigital/docker-octobercms) [![Docker Hub Pulls](https://img.shields.io/docker/pulls/aspendigital/octobercms.svg)](https://hub.docker.com/r/aspendigital/octobercms/) [![October CMS Build 411](https://img.shields.io/badge/October%20CMS%20Build-411-red.svg)](https://github.com/octobercms/october) [![Edge Build 411](https://img.shields.io/badge/Edge%20Build-411-lightgrey.svg)](https://github.com/octobercms/october)
 
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
