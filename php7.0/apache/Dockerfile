@@ -36,8 +36,8 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   && rmdir $OCTOBER_TMP_FOLDER \
   && rm octobercms.tar.gz \
   # match build dependencies
-  && echo "Update composer.json: Require dependencies of the same build" \
-  && sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"${OCTOBERCMS_TAG#v}\"/g" composer.json \
+  && echo "Update composer.json: Require dependencies equal to or less than core build" \
+  && sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json \
   && egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json \
   && composer install --no-interaction --prefer-dist --no-scripts \
   # setup docker env
