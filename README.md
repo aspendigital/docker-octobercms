@@ -4,7 +4,7 @@
 
 The docker images defined in this repository serve as a starting point for [October CMS](https://octobercms.com) projects.
 
-Based on [official docker PHP images](https://github.com/docker-library/php), images include dependencies required by October, Composer and install the [latest release](https://octobercms.com/changelog).
+Based on [official docker PHP images](https://hub.docker.com/_/php), images include dependencies required by October, Composer and install the [latest release](https://octobercms.com/changelog).
 
 ## Supported Tags
 
