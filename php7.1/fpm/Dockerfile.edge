@@ -22,10 +22,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 
 
-ENV OCTOBERCMS_TAG v1.0.419
-ENV OCTOBERCMS_CHECKSUM 967d673cbc6977e823270127650d0e63c9164b0f
-ENV OCTOBERCMS_CORE_BUILD 419
-ENV OCTOBERCMS_CORE_HASH 386846ebe3802c4f192625743abb3f06
+ENV OCTOBERCMS_TAG v1.0.420
+ENV OCTOBERCMS_CHECKSUM 13f7b11b2f062025697e5a93f5bc4dcb109daa07
+ENV OCTOBERCMS_CORE_BUILD 420
+ENV OCTOBERCMS_CORE_HASH 9c5af2e2c04126ed4fd4039c20d8bbb3
 
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/legacy.tar.gz/{$OCTOBERCMS_TAG} \
