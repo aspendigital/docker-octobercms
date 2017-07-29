@@ -5,13 +5,9 @@ env:
   matrix:
     - VARIANT=php5.6/apache
       BRANCH=stable
-    - VARIANT=php5.6/apache
-      BRANCH=edge
 
     - VARIANT=php5.6/fpm
       BRANCH=stable
-    - VARIANT=php5.6/fpm
-      BRANCH=edge
 
     - VARIANT=php7.0/apache
       BRANCH=stable

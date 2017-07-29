@@ -55,8 +55,8 @@ function update_dockerfiles {
   [ "$1" = "edge" ] && local hash=$EDGE_CORE_HASH || local hash=$STABLE_CORE_HASH
   [ "$1" = "edge" ] && local build=$EDGE_BUILD || local build=$STABLE_BUILD
   [ "$1" = "edge" ] && local ext=".edge" || local ext=""
+  [ "$1" = "edge" ] && local phpVersions=( php7.*/ ) || local phpVersions=( php*.*/ )
 
-	phpVersions=( php*.*/ )
   phpVersions=( "${phpVersions[@]%/}" )
 
   for phpVersion in "${phpVersions[@]}"; do
@@ -131,6 +131,7 @@ function update_buildtags {
   		fi
 
       # Build edge tags
+      [ -f "$dir/Dockerfile.edge" ] || continue
       edgeVersion="$(cat "$dir/Dockerfile.edge" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_CORE_BUILD" { print $3; exit }')"
       edgeVersion=build.$edgeVersion
 

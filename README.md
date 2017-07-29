@@ -12,8 +12,6 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 - `build.419-php7.1-fpm`, `php7.1-fpm`: [php7.1/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile)
 - `build.419-php7.0-apache`, `php7.0-apache`: [php7.0/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile)
 - `build.419-php7.0-fpm`, `php7.0-fpm`: [php7.0/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile)
-- `build.419-php5.6-apache`, `php5.6-apache`: [php5.6/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/apache/Dockerfile)
-- `build.419-php5.6-fpm`, `php5.6-fpm`: [php5.6/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/fpm/Dockerfile)
 
 
 ### Edge Build Tags
@@ -22,8 +20,6 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 - `build.420-php7.1-fpm`, `edge-php7.1-fpm`: [php7.1/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.edge)
 - `build.420-php7.0-apache`, `edge-php7.0-apache`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.edge)
 - `build.420-php7.0-fpm`, `edge-php7.0-fpm`: [php7.0/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.edge)
-- `build.420-php5.6-apache`, `edge-php5.6-apache`: [php5.6/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/apache/Dockerfile.edge)
-- `build.420-php5.6-fpm`, `edge-php5.6-fpm`: [php5.6/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php5.6/fpm/Dockerfile.edge)
 
 ## Quick Start
 
