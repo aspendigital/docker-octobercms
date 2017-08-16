@@ -1,10 +1,10 @@
 FROM php:%%PHP_VERSION%%-%%VARIANT%%
 
 RUN apt-get update && apt-get install -y git-core \
-  libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev \
-  && rm -rf /var/lib/apt/lists/* \
-  && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-  && docker-php-ext-install gd mcrypt mysqli opcache pdo pdo_pgsql pdo_mysql pdo_sqlite zip
+  libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
+  rm -rf /var/lib/apt/lists/* && \
+  docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
+  docker-php-ext-install gd mcrypt mysqli opcache pdo pdo_pgsql pdo_mysql pdo_sqlite zip
 
 # Recommended opcache settings - https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -24,8 +24,8 @@ RUN { \
     echo 'memory_limit=128M'; \
 	} > /usr/local/etc/php/conf.d/docker-oc-php.ini
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-  && /usr/local/bin/composer global require hirak/prestissimo
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+  /usr/local/bin/composer global require hirak/prestissimo
 
 %%VARIANT_EXTRAS%%
 
