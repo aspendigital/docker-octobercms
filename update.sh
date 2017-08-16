@@ -76,7 +76,7 @@ function update_dockerfiles {
   		fi
 
 			sed \
-				-e '/^.*#.*$/d' \
+				-e '/^#.*$/d' -e '/^  #.*$/d' \
 				-e 's!%%OCTOBERCMS_TAG%%!'"$current_tag"'!g' \
 				-e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
 				-e 's!%%OCTOBERCMS_CORE_HASH%%!'"$hash"'!g' \

@@ -37,7 +37,10 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
+  echo "Update composer.json: Drop october module dependencies and set 'october/rain' reference" && \
   sed -i.orig '/october\/[system|backend|cms]/,+0 d' composer.json && \
+  sed -i.'' "s/\(\"october\/\(rain*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
+  egrep -o "['\"]october\/[rain]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   echo 'APP_ENV=docker' > .env && \
   mkdir config/docker && \
