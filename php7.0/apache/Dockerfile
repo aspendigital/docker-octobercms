@@ -7,13 +7,13 @@ RUN apt-get update && apt-get install -y git-core \
   docker-php-ext-install gd mcrypt mysqli opcache pdo pdo_pgsql pdo_mysql pdo_sqlite zip
 
 RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=2'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-	} > /usr/local/etc/php/conf.d/docker-oc-opcache.ini
+    echo 'opcache.memory_consumption=128'; \
+    echo 'opcache.interned_strings_buffer=8'; \
+    echo 'opcache.max_accelerated_files=4000'; \
+    echo 'opcache.revalidate_freq=2'; \
+    echo 'opcache.fast_shutdown=1'; \
+    echo 'opcache.enable_cli=1'; \
+  } > /usr/local/etc/php/conf.d/docker-oc-opcache.ini
 
 RUN { \
     echo 'log_errors=on'; \
@@ -21,7 +21,7 @@ RUN { \
     echo 'upload_max_filesize=32M'; \
     echo 'post_max_size=32M'; \
     echo 'memory_limit=128M'; \
-	} > /usr/local/etc/php/conf.d/docker-oc-php.ini
+  } > /usr/local/etc/php/conf.d/docker-oc-php.ini
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
