@@ -1,6 +1,6 @@
 FROM php:7.0-fpm
 
-RUN apt-get update && apt-get install -y git-core \
+RUN apt-get update && apt-get install -y git-core nano \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \

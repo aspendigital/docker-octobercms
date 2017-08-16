@@ -1,6 +1,6 @@
 FROM php:%%PHP_VERSION%%-%%VARIANT%%
 
-RUN apt-get update && apt-get install -y git-core \
+RUN apt-get update && apt-get install -y git-core nano \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
