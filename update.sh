@@ -31,13 +31,13 @@ function check_october {
 
 function update_checksum {
   if [ -z "$1" ]; then
-    echo "Error: Invalid tag. Aborting..." && exit 1;
+    echo "Error: Invalid slug. Aborting..." && exit 1;
   else
-    local TAG=$1;
+    local SLUG=$1;
   fi
 
-  local ARCHIVE="octobercms-$TAG.tar.gz"
-  curl -o $ARCHIVE -fS#L --connect-timeout 15 https://codeload.github.com/octobercms/october/legacy.tar.gz/$TAG || exit 1;
+  local ARCHIVE="octobercms-$SLUG.tar.gz"
+  curl -o $ARCHIVE -fS#L --connect-timeout 15 https://codeload.github.com/octobercms/october/tar.gz/$SLUG || exit 1;
   if hash sha1sum 2>&-; then
     sha1sum $ARCHIVE | awk '{print $1}'
   elif hash openssl 2>&-; then
@@ -80,6 +80,8 @@ function update_dockerfiles {
 				-e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
 				-e 's!%%OCTOBERCMS_CORE_HASH%%!'"$hash"'!g' \
 				-e 's!%%OCTOBERCMS_CORE_BUILD%%!'"$build"'!g' \
+				-e 's!%%OCTOBERCMS_DEVELOP_COMMIT%%!'"$GITHUB_LATEST_COMMIT"'!g' \
+				-e 's!%%OCTOBERCMS_DEVELOP_CHECKSUM%%!'"$GITHUB_LATEST_CHECKSUM"'!g' \
 				-e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
 				-e 's!%%VARIANT%%!'"$variant"'!g' \
 				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
@@ -263,6 +265,13 @@ echo " - Fetching GitHub repository for latest tag..."
 GITHUB_LATEST_TAG=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/tags | jq -r '.[0] | .name') || exit 1;
 [ -z "$GITHUB_LATEST_TAG" ] && exit 1 || echo "    Latest repo tag: $GITHUB_LATEST_TAG";
 
+echo " - Fetching latest commit on develop branch..."
+GITHUB_LATEST_COMMIT=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/commits/develop | jq -r '.sha') || exit 1;
+[ -z "$GITHUB_LATEST_COMMIT" ] && exit 1 || echo "    Latest commit hash: $GITHUB_LATEST_COMMIT";
+
+echo " - Generating develop checksum..."
+GITHUB_LATEST_CHECKSUM=$(update_checksum $GITHUB_LATEST_COMMIT)
+
 if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo " - Setting build values..."
   echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && echo "OCTOBERCMS_BUILD=$STABLE_BUILD" > version
@@ -271,6 +280,8 @@ if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo "    OCTOBERCMS_EDGE_BUILD: $EDGE_BUILD" && echo "OCTOBERCMS_EDGE_BUILD=$EDGE_BUILD" >> version
   echo "    OCTOBERCMS_EDGE_CORE_HASH: $EDGE_CORE_HASH" && echo "OCTOBERCMS_EDGE_CORE_HASH=$EDGE_CORE_HASH" >> version
   echo "    OCTOBERCMS_EDGE_CHECKSUM: $EDGE_CHECKSUM" && echo "OCTOBERCMS_EDGE_CHECKSUM=$EDGE_CHECKSUM" >> version
+  echo "    OCTOBERCMS_DEVELOP_COMMIT: $GITHUB_LATEST_COMMIT" && echo "OCTOBERCMS_DEVELOP_COMMIT=$GITHUB_LATEST_COMMIT" >> version
+  echo "    OCTOBERCMS_DEVELOP_CHECKSUM: $GITHUB_LATEST_CHECKSUM" && echo "OCTOBERCMS_DEVELOP_CHECKSUM=$GITHUB_LATEST_CHECKSUM" >> version
   update_dockerfiles && update_dockerfiles edge
   update_buildtags
   [ "$TEST" ] && echo ' - Testing. No changes committed.' || update_repo
