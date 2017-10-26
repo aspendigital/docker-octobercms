@@ -43,7 +43,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   # drop module dependencies - https://github.com/octobercms/october/issues/2975
   sed -i.orig '/october\/[system|backend|cms]/,+0 d' composer.json && \
   # match build dependencies
-  sed -i.'' "s/\(\"october\/\(rain*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
+  sed -i "s/\(\"october\/\(rain*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
   egrep -o "['\"]october\/[rain]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   # setup docker env
