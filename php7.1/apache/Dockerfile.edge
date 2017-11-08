@@ -1,6 +1,6 @@
 FROM php:7.1-apache
 
-RUN apt-get update && apt-get install -y git-core nano \
+RUN apt-get update && apt-get install -y cron git-core nano \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
@@ -52,5 +52,8 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   php artisan october:up && \
   php artisan october:util set build && \
   chown -R www-data:www-data /var/www/html
+
+RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
+    crontab /etc/cron.d/october-cron
 
 CMD ["apache2-foreground"]

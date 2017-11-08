@@ -1,6 +1,6 @@
 FROM php:5.6-fpm
 
-RUN apt-get update && apt-get install -y git-core nano \
+RUN apt-get update && apt-get install -y cron git-core nano \
   libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
@@ -58,5 +58,8 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
     Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
     echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
   chown -R www-data:www-data /var/www/html
+
+RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
+  crontab /etc/cron.d/october-cron
 
 CMD ["php-fpm"]
