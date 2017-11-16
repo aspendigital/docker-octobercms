@@ -1,5 +1,7 @@
+sudo: required
 language: bash
-services: docker
+services:
+  - docker
 
 env:
   matrix:
@@ -33,16 +35,41 @@ install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
+  - docker -v
   - env | sort
+  - source version
+  - if [ "$BRANCH" == "stable" ]; then build="build.$OCTOBERCMS_BUILD"; else build="build.$OCTOBERCMS_EDGE_BUILD"; fi
+  - echo $build
+  - if [ "$BRANCH" == "stable" ]; then prefix=""; else prefix="$BRANCH-"; fi
+  - image='aspendigital/octobercms'; slash='/'; tag="$prefix${VARIANT//$slash/-}";
+  - if [ "$BRANCH" == "edge" ]; then dockerfile="Dockerfile.edge"; else dockerfile="Dockerfile"; fi
   - cd "$VARIANT"
-  - if [ "$BRANCH" = "stable" ]; then prefix=""; else prefix="$BRANCH-"; fi
-  - slash='/'; image="aspendigital/octobercms:$prefix${VARIANT//$slash/-}"
-  - if [ "$BRANCH" = "edge" ]; then dockerfile="Dockerfile.edge"; else dockerfile="Dockerfile"; fi
 
 script:
-  - docker build -t "$image" -f $dockerfile .
-  - ~/official-images/test/run.sh "$image"
-  - docker run --rm "$image" vendor/bin/phpunit
+  - docker build -t "$image:$tag" -f $dockerfile .
+  - ~/official-images/test/run.sh "$image:$tag"
+  - docker run --rm "$image:$tag" vendor/bin/phpunit
 
-after_script:
-  - docker images
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+      docker push "$image:$tag";
+
+      docker build -t "$image:$build-${VARIANT//$slash/-}" -f $dockerfile .;
+      docker push "$image:$build-${VARIANT//$slash/-}";
+
+      if [ "$VARIANT" == "php7.1/apache" ]; then
+        docker build -t "$image:$build" -f $dockerfile .;
+        docker push "$image:$build";
+
+        if [ "$BRANCH" == "stable" ]; then
+          docker build -t "$image:latest" -f $dockerfile .;
+          docker push "$image:latest";
+        else
+          docker build -t "$image:edge" -f $dockerfile .;
+          docker push "$image:edge";
+        fi
+      fi
+
+    fi;
+  - docker images;
