@@ -133,6 +133,8 @@ function update_buildtags {
   			fi
   		fi
 
+  		tagsMarkdown+="- $(join ', ' "${fullAliases[@]}"): [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
+
       # Build edge tags
       [ -f "$dir/Dockerfile.edge" ] || continue
       edgeVersion="$(cat "$dir/Dockerfile.edge" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_CORE_BUILD" { print $3; exit }')"
@@ -151,8 +153,6 @@ function update_buildtags {
   				fullEdgeAliases+=( "${edgeAliases[@]}" )
   			fi
   		fi
-
-  		tagsMarkdown+="- $(join ', ' "${fullAliases[@]}"): [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
   		edgeTagsMarkdown+="- $(join ', ' "${fullEdgeAliases[@]}"): [$dir/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.edge)\n"
   	done
   done
