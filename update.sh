@@ -183,21 +183,7 @@ function update_repo {
     git commit -m "Edge Build $EDGE_BUILD" -m "Automated update"
   fi
 
-  if git rev-parse "build.$STABLE_BUILD" >/dev/null 2>&1; then
-    echo "    Tag 'build.$STABLE_BUILD' already exists..."
-  else
-    echo "    Setting tag 'build.$STABLE_BUILD'..."
-    git tag "build.$STABLE_BUILD"
-  fi
-
-  if git rev-parse "build.$EDGE_BUILD" >/dev/null 2>&1; then
-    echo "    Tag 'build.$EDGE_BUILD' already exists..."
-  else
-    echo "    Setting tag 'build.$EDGE_BUILD'..."
-    git tag "build.$EDGE_BUILD"
-  fi
-
-  git push && git push --tags
+  git push
 }
 
 #########################
