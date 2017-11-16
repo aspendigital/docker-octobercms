@@ -29,15 +29,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 %%VARIANT_EXTRAS%%
 
-
+ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
+ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
 ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
-ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
-ENV OCTOBERCMS_DEVELOP_COMMIT %%OCTOBERCMS_DEVELOP_COMMIT%%
-ENV OCTOBERCMS_DEVELOP_CHECKSUM %%OCTOBERCMS_DEVELOP_CHECKSUM%%
 
 # Consolidated October CMS setup
-RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_DEVELOP_COMMIT} && \
-  echo "$OCTOBERCMS_DEVELOP_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
+RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
+  echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
   # drop module dependencies - https://github.com/octobercms/october/issues/2975

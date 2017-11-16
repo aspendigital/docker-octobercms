@@ -28,14 +28,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN a2enmod rewrite
 
-
+ENV OCTOBERCMS_TAG v1.0.428
+ENV OCTOBERCMS_CHECKSUM 9850598ddd67ac4c0662e252d28b30a06297e22c
 ENV OCTOBERCMS_CORE_BUILD 428
-ENV OCTOBERCMS_CORE_HASH 1647cd696755b55379e976a3517eadd1
-ENV OCTOBERCMS_DEVELOP_COMMIT a3b93f1a0b84c14b238c464a1eb93801efea06d6
-ENV OCTOBERCMS_DEVELOP_CHECKSUM 99561edfbb13c1c624c96c8def2c0c26ae12610c
 
-RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_DEVELOP_COMMIT} && \
-  echo "$OCTOBERCMS_DEVELOP_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
+RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
+  echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
   echo "Update composer.json: Drop october module dependencies" && \
