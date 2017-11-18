@@ -28,10 +28,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 
 
-ENV OCTOBERCMS_TAG v1.0.419
-ENV OCTOBERCMS_CHECKSUM 024647247bbfe6041f25dd64b3be345aff8d0922
-ENV OCTOBERCMS_CORE_BUILD 419
-ENV OCTOBERCMS_CORE_HASH 386846ebe3802c4f192625743abb3f06
+ENV OCTOBERCMS_TAG v1.0.428
+ENV OCTOBERCMS_CHECKSUM 9850598ddd67ac4c0662e252d28b30a06297e22c
+ENV OCTOBERCMS_CORE_BUILD 428
+ENV OCTOBERCMS_CORE_HASH 1647cd696755b55379e976a3517eadd1
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
