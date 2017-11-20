@@ -5,30 +5,22 @@ services:
 
 env:
   matrix:
-    - VARIANT=php5.6/apache
-      BRANCH=stable
-
-    - VARIANT=php5.6/fpm
-      BRANCH=stable
-
-    - VARIANT=php7.0/apache
-      BRANCH=stable
-    - VARIANT=php7.0/apache
-      BRANCH=edge
-
-    - VARIANT=php7.0/fpm
-      BRANCH=stable
-    - VARIANT=php7.0/fpm
-      BRANCH=edge
-
     - VARIANT=php7.1/apache
       BRANCH=stable
-    - VARIANT=php7.1/apache
-      BRANCH=edge
-
     - VARIANT=php7.1/fpm
       BRANCH=stable
+    - VARIANT=php7.0/apache
+      BRANCH=stable
+    - VARIANT=php7.0/fpm
+      BRANCH=stable
+
+    - VARIANT=php7.1/apache
+      BRANCH=edge
     - VARIANT=php7.1/fpm
+      BRANCH=edge
+    - VARIANT=php7.0/apache
+      BRANCH=edge
+    - VARIANT=php7.0/fpm
       BRANCH=edge
 
 install:
@@ -36,40 +28,48 @@ install:
 
 before_script:
   - docker -v
-  - env | sort
   - source version
-  - if [ "$BRANCH" == "stable" ]; then build="build.$OCTOBERCMS_BUILD"; else build="build.$OCTOBERCMS_EDGE_BUILD"; fi
-  - echo $build
-  - if [ "$BRANCH" == "stable" ]; then prefix=""; else prefix="$BRANCH-"; fi
-  - image='aspendigital/octobercms'; slash='/'; tag="$prefix${VARIANT//$slash/-}";
-  - if [ "$BRANCH" == "edge" ]; then dockerfile="Dockerfile.edge"; else dockerfile="Dockerfile"; fi
+  - IMAGE='aspendigital/octobercms';
+    SLASH='/';
+    if [ "$BRANCH" == "stable" ]; then
+      DOCKERFILE="Dockerfile";
+      BUILD="build.$OCTOBERCMS_BUILD";
+      TAG="${VARIANT//$SLASH/-}";
+      TAG_LONG="$BUILD-$TAG";
+    else
+      DOCKERFILE="Dockerfile.edge";
+      BUILD="edge-build.$OCTOBERCMS_EDGE_BUILD";
+      TAG="edge-${VARIANT//$SLASH/-}";
+      TAG_LONG="$BUILD-${VARIANT//$SLASH/-}";
+    fi;
+    echo "$BUILD | $TAG | $DOCKERFILE";
   - cd "$VARIANT"
 
 script:
-  - docker build -t "$image:$tag" -f $dockerfile .
-  - ~/official-images/test/run.sh "$image:$tag"
-  - docker run --rm "$image:$tag" vendor/bin/phpunit
+  - docker build -t "$IMAGE:$TAG" -f $DOCKERFILE .
+  - ~/official-images/test/run.sh "$IMAGE:$TAG"
+  - docker run --rm "$IMAGE:$TAG" vendor/bin/phpunit
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
       docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
-      docker push "$image:$tag";
+      docker push "$IMAGE:$TAG";
 
-      docker build -t "$image:$build-${VARIANT//$slash/-}" -f $dockerfile .;
-      docker push "$image:$build-${VARIANT//$slash/-}";
+      docker build -t "$IMAGE:$TAG_LONG" -f $DOCKERFILE .;
+      docker push "$IMAGE:$TAG_LONG";
 
       if [ "$VARIANT" == "php7.1/apache" ]; then
-        docker build -t "$image:$build" -f $dockerfile .;
-        docker push "$image:$build";
+        docker build -t "$IMAGE:$BUILD" -f $DOCKERFILE .;
+        docker push "$IMAGE:$BUILD";
 
         if [ "$BRANCH" == "stable" ]; then
-          docker build -t "$image:latest" -f $dockerfile .;
-          docker push "$image:latest";
+          docker build -t "$IMAGE:latest" -f $DOCKERFILE .;
+          docker push "$IMAGE:latest";
         else
-          docker build -t "$image:edge" -f $dockerfile .;
-          docker push "$image:edge";
+          docker build -t "$IMAGE:edge" -f $DOCKERFILE .;
+          docker push "$IMAGE:edge";
         fi
       fi
 
-    fi;
+    fi
   - docker images;

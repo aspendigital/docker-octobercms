@@ -55,7 +55,8 @@ function update_dockerfiles {
   [ "$1" = "edge" ] && local hash=$EDGE_CORE_HASH || local hash=$STABLE_CORE_HASH
   [ "$1" = "edge" ] && local build=$EDGE_BUILD || local build=$STABLE_BUILD
   [ "$1" = "edge" ] && local ext=".edge" || local ext=""
-  [ "$1" = "edge" ] && local phpVersions=( php7.*/ ) || local phpVersions=( php*.*/ )
+
+  local phpVersions=( php7.*/ )
 
   phpVersions=( "${phpVersions[@]%/}" )
 
@@ -104,7 +105,7 @@ function update_buildtags {
   defaultPhpVersion='php7.1'
   defaultVariant='apache'
 
-  phpFolders=( php*.*/ )
+  phpFolders=( php7.*/ )
   phpVersions=()
   # process in descending order
   for (( idx=${#phpFolders[@]}-1 ; idx>=0 ; idx-- )) ; do
@@ -138,7 +139,7 @@ function update_buildtags {
       # Build edge tags
       [ -f "$dir/Dockerfile.edge" ] || continue
       edgeVersion="$(cat "$dir/Dockerfile.edge" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_CORE_BUILD" { print $3; exit }')"
-      edgeVersion=build.$edgeVersion
+      edgeVersion=edge-build.$edgeVersion
 
       edgeAliases=()
       edgeAliases+=( $edgeVersion edge )
@@ -164,9 +165,9 @@ function update_buildtags {
    | sed -e "s/Edge Build [0-9]*/Edge Build $EDGE_BUILD/" \
    | sed -e "s/Edge%20Build-[0-9]*/Edge%20Build-$EDGE_BUILD/" > README_TMP.md
 	echo -e "\n${tagsMarkdown[*]}" >> README_TMP.md
-  echo -e "\n### Edge Build Tags" >> README_TMP.md
+  echo -e "\n### Edge Tags" >> README_TMP.md
   echo -e "\n${edgeTagsMarkdown[*]}" >> README_TMP.md
-	sed -n -e '/Quick Start/,$p' README.md >> README_TMP.md
+	sed -n -e '/Legacy Tags/,$p' README.md >> README_TMP.md
 	mv README_TMP.md README.md
 }
 
@@ -271,7 +272,7 @@ if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo "    OCTOBERCMS_DEVELOP_CHECKSUM: $GITHUB_LATEST_CHECKSUM" && echo "OCTOBERCMS_DEVELOP_CHECKSUM=$GITHUB_LATEST_CHECKSUM" >> version
   update_dockerfiles && update_dockerfiles edge
   update_buildtags
-  [ "$PUSH" ] && update_repo || echo ' - No changes committed.' 
+  [ "$PUSH" ] && update_repo || echo ' - No changes committed.'
 
   if [ "$SLACK_WEBHOOK_URL" ]; then
     echo -n " - Posting update to Slack..."
