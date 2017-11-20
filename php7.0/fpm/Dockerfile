@@ -51,12 +51,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   touch storage/database.sqlite && \
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
-  php -r "use System\\Models\\Parameter; \
-    require __DIR__.'/bootstrap/autoload.php'; \
-    \$app = require_once __DIR__.'/bootstrap/app.php'; \
-    \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
-    Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
-    echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
+  php artisan october:util set build && \
   chown -R www-data:www-data /var/www/html
 
 RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
