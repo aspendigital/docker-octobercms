@@ -192,7 +192,7 @@ function update_repo {
 while true; do
   case "$1" in
     --force)  FORCE=1; shift ;;
-    --test)   TEST=1; shift ;;
+    --push)   PUSH=1; shift ;;
     *)
       break
   esac
@@ -203,7 +203,7 @@ done
 
 echo "Automat: `date`"
 
-[ "$TEST" ] && echo ' - Test mode'
+[ "$PUSH" ] && echo ' - Commit changes'
 # Load cached version if not forced
 [ "$FORCE" ] && echo ' - Force update' || source version
 
@@ -271,7 +271,7 @@ if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo "    OCTOBERCMS_DEVELOP_CHECKSUM: $GITHUB_LATEST_CHECKSUM" && echo "OCTOBERCMS_DEVELOP_CHECKSUM=$GITHUB_LATEST_CHECKSUM" >> version
   update_dockerfiles && update_dockerfiles edge
   update_buildtags
-  [ "$TEST" ] && echo ' - Testing. No changes committed.' || update_repo
+  [ "$PUSH" ] && update_repo || echo ' - No changes committed.' 
 
   if [ "$SLACK_WEBHOOK_URL" ]; then
     echo -n " - Posting update to Slack..."
