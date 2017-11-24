@@ -57,4 +57,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
 RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
   crontab /etc/cron.d/october-cron
 
+COPY docker-oc-entrypoint /usr/local/bin/
+
+ENTRYPOINT ["docker-oc-entrypoint"]
 CMD ["apache2-foreground"]

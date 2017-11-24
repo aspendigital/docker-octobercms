@@ -94,6 +94,23 @@ function update_dockerfiles {
   done
 }
 
+function copy_entrypoint {
+  local phpVersions=( php7.*/ )
+
+  phpVersions=( "${phpVersions[@]%/}" )
+
+  for phpVersion in "${phpVersions[@]}"; do
+    phpVersionDir="$phpVersion"
+    phpVersion="${phpVersion#php}"
+
+    for variant in apache fpm; do
+      dir="$phpVersionDir/$variant"
+      mkdir -p "$dir"
+      cp -a docker-oc-entrypoint "$dir/docker-oc-entrypoint"
+    done
+  done
+}
+
 function join {
 	local sep="$1"; shift
 	local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
@@ -259,6 +276,9 @@ GITHUB_LATEST_COMMIT=$( curl -fsS --connect-timeout 15 https://api.github.com/re
 
 echo " - Generating develop checksum..."
 GITHUB_LATEST_CHECKSUM=$(update_checksum $GITHUB_LATEST_COMMIT)
+
+echo " - Copying entrypoint..."
+copy_entrypoint
 
 if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo " - Setting build values..."

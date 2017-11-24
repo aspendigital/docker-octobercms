@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+if [[ "$1" == apache2* ]] && [ "${FWD_REMOTE_IP,,}" == "true" ]; then
+  a2enmod remoteip
+  echo 'RemoteIPHeader X-Forwarded-For' > $APACHE_CONFDIR/conf-available/docker-oc-apache.conf
+  a2enconf docker-oc-apache
+fi
+
+if [ "${ENABLE_CRON,,}" == "true" ]; then
+  php artisan schedule:run # required to prime db connection
+  cron
+fi
+
+exec "$@"
