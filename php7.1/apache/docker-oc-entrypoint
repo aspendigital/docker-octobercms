@@ -11,6 +11,8 @@ if [ "${ENABLE_CRON,,}" == "true" ]; then
   php artisan schedule:run # required to prime db connection
   cron
   echo 'Cron enabled.'
+elif [ "$1" == cron ]; then
+  php artisan schedule:run
 fi
 
 exec "$@"
