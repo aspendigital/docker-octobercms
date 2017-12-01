@@ -34,19 +34,149 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 To run October CMS using Docker, start a container using the latest image, mapping your local port 80 to the container's port 80:
 
 ```shell
-$ docker run -p80:80 aspendigital/octobercms:latest
+$ docker run -p 80:80 --name october aspendigital/octobercms:latest
+```
+
+ - Visit [http://localhost](http://localhost) using your browser.
+ - Login to the [backend](http://localhost/backend) with the username `admin` and password `admin`.
+
+Running a container in the foreground will dump logs to your terminal. Hit `CTRL-C` to stop the container.
+
+> If there is a port conflict, you will receive an error message from the Docker daemon. Try mapping to an open local port (-p 8080:80) or shut down the container or server that's on the desired port.
+
+Run the container in detached mode using the container name `october`:
+
+```shell
+$ docker run -p 80:80 --name october -d aspendigital/octobercms:latest
+$ docker stop october  # Stops the container. To restart `docker start october`
+$ docker rm october  # Destroys the container
 ```
 
 
-Run the container in detached mode using the container name `october` and launch an interactive shell (bash) for the container.
+## Database Support
+
+On build, an SQLite database is [created and initialized](https://github.com/aspendigital/docker-octobercms/blob/d3b288b9fe0606e32ac3d6466affd2996394bdca/Dockerfile.template#L54-L57) for the Docker image. With that database, users have immediate access to the backend for testing and developing themes and plugins. However, changes made to the built-in database will be lost once the container is stopped and removed.
+
+When projects require a persistent SQLite database, copy or create a new database to the host which can be used as a bind mount.
+
+```shell
+# Create and provision a new SQLite database:
+$ touch storage/database.sqlite
+$ docker run \
+  -v $(pwd)/storage/database.sqlite:/var/www/html/storage/database.sqlite \
+  aspendigital/octobercms php artisan october:up
+
+# Now run with the volume mounted to your host
+$ docker run -p 80:80 --name october \
+ -v $(pwd)/storage/database.sqlite:/var/www/html/storage/database.sqlite \
+ aspendigital/octobercms
+```
+
+Alternatively, you can host a database remotely using mysql or postgres:
+
+
+```
+$ docker run -p 80:80 --name october \
+  -e DB_TYPE=mysql \
+  -e DB_HOST=example.rds.amazonaws.com \
+  -e DB_DATABASE=example \
+  -e DB_USERNAME=username \
+  -e DB_PASSWORD=password \
+  aspendigital/octobercms
+```
+
+Or host the database using another container via `docker-compose`:
+
+```yml
+version: '2.2'
+services:
+  web:
+    image: aspendigital/octobercms:latest
+    ports:
+      - 80:80
+    environment:
+      - TZ=${TZ:-America/Denver}
+      - DB_TYPE=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=octobercms
+      - DB_USERNAME=october
+      - DB_PASSWORD=october
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      - TZ=${TZ:-America/Denver}
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=octobercms
+```
+
+
+## Cron
+
+You can start a cron process by setting the environment variable `ENABLE_CRON` to `true`:
+
+```shell
+$ docker run -p80:80 -e ENABLE_CRON=true aspendigital/octobercms:latest
+```
+
+Using `docker-compose`:
+
+```yml
+version: '2.2'
+services:
+  web:
+    image: aspendigital/octobercms:latest
+    ports:
+      - 80:80
+    environment:
+      - ENABLE_CRON=true
+```
+
+Separating the cron process into it's own container for production via `docker-compose`:
+
+```yml
+version: '2.2'
+services:
+  web:
+    image: aspendigital/octobercms:latest
+    init: true
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - TZ=America/Denver
+    volumes:
+      - ./.env:/var/www/html/.env
+      - ./plugins:/var/www/html/plugins
+      - ./storage/app:/var/www/html/storage/app
+      - ./storage/logs:/var/www/html/storage/logs
+      - ./storage/database.sqlite:/var/www/html/storage/database.sqlite
+      - ./themes:/var/www/html/themes
+
+  cron:
+    image: aspendigital/octobercms:latest
+    init: true
+    restart: always
+    command: [cron, -f]
+    environment:
+      - TZ=America/Denver
+    volumes_from:
+      - web
+```
+
+## Command Line Tasks
+
+Run the container in the background using the container name `october` and launch an interactive shell (bash) for the container.
 
 
 ```shell
-$ docker run -p80:80 -d --name october aspendigital/octobercms:latest
+$ docker run -p 80:80 --name october -d aspendigital/octobercms:latest
 
 $ docker exec -it october bash
 ```
----
+
 
 ## App Environment
 
@@ -115,5 +245,7 @@ List of variables used in `config/docker`
 <small>\* When using a container to serve a database, set the host value to the service name defined in your docker-compose.yml</small>
 
 <small>\** Timezone applies to both container and October CMS  config</small>
+
+---
 
 ![October](https://raw.githubusercontent.com/aspendigital/docker-octobercms/master/aspendigital-octobercms-docker-logo.png)
