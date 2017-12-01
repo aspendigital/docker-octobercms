@@ -48,4 +48,70 @@ $ docker exec -it october bash
 ```
 ---
 
+## Environment
+
+By default, `APP_ENV` is set to `docker`.
+
+On image build, a default `.env` is created and [config files](https://github.com/aspendigital/docker-octobercms/tree/master/config/docker) for the `docker` app environment are copied to `/var/www/html/config/docker`. Environment variables can be used to override the included default settings via [`docker run`](https://docs.docker.com/engine/reference/run/#env-environment-variables) or [`docker-compose`](https://docs.docker.com/compose/environment-variables/).
+
+> __Note__: October CMS settings stored in a site's database override the config. Active theme, mail configuration, and other settings which are saved in the database will ultimately override configuration values.
+
+
+### Environment Variables
+
+
+Environment variables settings can be passed to both docker-compose and October CMS.
+
+ > Database credentials and other sensitive information should not be committed to the repository. Those required settings should be outlined in __.env.example__
+
+
+#### Docker Entrypoint
+
+| Variable | Default | Action |
+| -------- | ------- | ------ |
+| ENABLE_CRON | false | Enables a cron process |
+| FWD_REMOTE_IP | false | Forwards remote IP from proxy (Apache) |
+
+#### October CMS app environment config
+
+List of variables used in `config/docker`
+
+| Variable | Default |
+| -------- | ------- |
+| APP_DEBUG | true |
+| APP_URL | http://localhost |
+| APP_KEY | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
+| CACHE_STORE | file |
+| CMS_ACTIVE_THEME | demo |
+| CMS_EDGE_UPDATES | false |
+| CMS_DISABLE_CORE_UPDATES | true |
+| CMS_BACKEND_SKIN | Backend\Skins\Standard |
+| CMS_LINK_POLICY | detect |
+| CMS_BACKEND_FORCE_SECURE | false |
+| DB_TYPE | sqlite |
+| DB_SQLITE_PATH | storage/database.sqlite |
+| DB_HOST | mysql* |
+| DB_PORT | - |
+| DB_DATABASE | - |
+| DB_USERNAME | - |
+| DB_PASSWORD | - |
+| DB_REDIS_HOST | redis* |
+| DB_REDIS_PASSWORD | null |
+| DB_REDIS_PORT | 6379 |
+| MAIL_DRIVER | log |
+| MAIL_SMTP_HOST | - |
+| MAIL_SMTP_PORT | 587 |
+| MAIL_FROM_ADDRESS | no-reply@domain.tld |
+| MAIL_FROM_NAME | October CMS |
+| MAIL_SMTP_ENCRYPTION | tls |
+| MAIL_SMTP_USERNAME | - |
+| MAIL_SMTP_PASSWORD | - |
+| QUEUE_DRIVER | sync |
+| SESSION_DRIVER | file |
+| TZ\** | UTC |
+
+<small>\* When using a container to serve a database, set the host value to the service name defined in your docker-compose.yml</small>
+
+<small>\** Timezone applies to both container and October CMS  config</small>
+
 ![October](https://raw.githubusercontent.com/aspendigital/docker-octobercms/master/aspendigital-octobercms-docker-logo.png)

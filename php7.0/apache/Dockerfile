@@ -28,6 +28,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN a2enmod rewrite
 
+COPY config/docker /usr/src/octobercms-config-docker
+
 ENV OCTOBERCMS_TAG v1.0.428
 ENV OCTOBERCMS_CHECKSUM 9850598ddd67ac4c0662e252d28b30a06297e22c
 ENV OCTOBERCMS_CORE_BUILD 428
@@ -43,11 +45,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   egrep -o "['\"]october\/[rain]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   echo 'APP_ENV=docker' > .env && \
-  mkdir config/docker && \
-  echo "<?php return ['edgeUpdates' => false, 'disableCoreUpdates' => true];" > config/docker/cms.php && \
-  echo "<?php return ['default' => 'sqlite'];" > config/docker/database.php && \
-  echo "<?php return ['driver' => 'log'];" > config/docker/mail.php && \
-  echo "<?php return ['default' => 'docker', 'hosts' => ['localhost' => 'docker']];" > config/docker/environment.php && \
+  mv /usr/src/octobercms-config-docker config/docker && \
   touch storage/database.sqlite && \
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
