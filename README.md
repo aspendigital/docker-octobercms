@@ -62,7 +62,7 @@ When projects require a persistent SQLite database, copy or create a new databas
 ```shell
 # Create and provision a new SQLite database:
 $ touch storage/database.sqlite
-$ docker run \
+$ docker run --rm \
   -v $(pwd)/storage/database.sqlite:/var/www/html/storage/database.sqlite \
   aspendigital/octobercms php artisan october:up
 
