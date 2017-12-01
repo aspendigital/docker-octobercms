@@ -64,6 +64,8 @@ Environment variables can be passed to both docker-compose and October CMS.
 
  > Database credentials and other sensitive information should not be committed to the repository. Those required settings should be outlined in __.env.example__
 
+ > Passing environment variables via Docker can be problematic in production. A `phpinfo()` call may leak secrets by outputting environment variables.  Consider mounting a `.env` volume or copying it to the container directly.
+
 
 #### Docker Entrypoint
 
@@ -83,7 +85,7 @@ List of variables used in `config/docker`
 | APP_KEY | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
 | CACHE_STORE | file |
 | CMS_ACTIVE_THEME | demo |
-| CMS_EDGE_UPDATES | false |
+| CMS_EDGE_UPDATES | false  (true in `edge` images) |
 | CMS_DISABLE_CORE_UPDATES | true |
 | CMS_BACKEND_SKIN | Backend\Skins\Standard |
 | CMS_LINK_POLICY | detect |
