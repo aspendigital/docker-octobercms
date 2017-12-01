@@ -43,6 +43,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   composer install --no-interaction --prefer-dist --no-scripts && \
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
+  sed -i "s/'CMS_EDGE_UPDATES', false/'CMS_EDGE_UPDATES', true/" config/docker/cms.php && \
   touch storage/database.sqlite && \
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
