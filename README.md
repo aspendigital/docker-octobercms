@@ -48,11 +48,11 @@ $ docker exec -it october bash
 ```
 ---
 
-## Environment
+## App Environment
 
 By default, `APP_ENV` is set to `docker`.
 
-On image build, a default `.env` is created and [config files](https://github.com/aspendigital/docker-octobercms/tree/master/config/docker) for the `docker` app environment are copied to `/var/www/html/config/docker`. Environment variables can be used to override the included default settings via [`docker run`](https://docs.docker.com/engine/reference/run/#env-environment-variables) or [`docker-compose`](https://docs.docker.com/compose/environment-variables/).
+On image build, a default `.env` is [created](https://github.com/aspendigital/docker-octobercms/blob/d3b288b9fe0606e32ac3d6466affd2996394bdca/Dockerfile.template#L52) and [config files](https://github.com/aspendigital/docker-octobercms/tree/master/config/docker) for the `docker` app environment are copied to `/var/www/html/config/docker`. Environment variables can be used to override the included default settings via [`docker run`](https://docs.docker.com/engine/reference/run/#env-environment-variables) or [`docker-compose`](https://docs.docker.com/compose/environment-variables/).
 
 > __Note__: October CMS settings stored in a site's database override the config. Active theme, mail configuration, and other settings which are saved in the database will ultimately override configuration values.
 
@@ -60,7 +60,7 @@ On image build, a default `.env` is created and [config files](https://github.co
 ### Environment Variables
 
 
-Environment variables settings can be passed to both docker-compose and October CMS.
+Environment variables can be passed to both docker-compose and October CMS.
 
  > Database credentials and other sensitive information should not be committed to the repository. Those required settings should be outlined in __.env.example__
 
