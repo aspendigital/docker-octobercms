@@ -39,14 +39,13 @@ $ docker run -p 80:80 --name october aspendigital/octobercms:latest
 $ docker rm october  # Destroys the container
 ```
 
+> If there is a port conflict, you will receive an error message from the Docker daemon. Try mapping to an open local port (-p 8080:80) or shut down the container or server that is on the desired port.
+
  - Visit [http://localhost](http://localhost) using your browser.
  - Login to the [backend](http://localhost/backend) with the username `admin` and password `admin`.
+ - Hit `CTRL-C` to stop the container. Running a container in the foreground will send log outputs to your terminal.
 
-Running a container in the foreground will dump logs to your terminal. Hit `CTRL-C` to stop the container.
-
-> If there is a port conflict, you will receive an error message from the Docker daemon. Try mapping to an open local port (-p 8080:80) or shut down the container or server that's on the desired port.
-
-Run the container in detached mode using the container name `october`:
+Run the container in the background by passing the `-d` option:
 
 ```shell
 $ docker run -p 80:80 --name october -d aspendigital/octobercms:latest
@@ -56,12 +55,12 @@ $ docker rm october  # Destroys the container
 
 #### Working with local files
 
-Using Docker volumes, you can link your local filesystem to a container.
+Using Docker volumes, you can mount local files inside a container.
 
 The container uses the working directory `/var/www/html` for the web server document root. This is where the October CMS codebase resides in the container. You can replace files and folders, or introduce new ones with bind-mounted volumes:
 
 ```shell
-# Developing on a plugin
+# Developing a plugin
 $ git clone git@github.com:aspendigital/oc-resizer-plugin.git
 $ cd oc-resizer-plugin
 $ docker run -p 80:80 --rm \
@@ -69,7 +68,7 @@ $ docker run -p 80:80 --rm \
   aspendigital/octobercms:latest
 ```
 
-Save yourself some keyboards strokes, utilize [docker-compose](https://docs.docker.com/compose/overview/) by introducing a `docker-compose.yml` to your project folder:
+Save yourself some keyboards strokes, utilize [docker-compose](https://docs.docker.com/compose/overview/) by introducing a `docker-compose.yml` file to your project folder:
 
 ```yml
 # docker-compose.yml
@@ -85,12 +84,14 @@ services:
 With the above example saved in working directory, run:
 
 ```shell
-$ docker-compose up -d #start services defined in `docker-compose.yml`
-$ docker-compose down #stop and destroy
+$ docker-compose up -d # start services defined in `docker-compose.yml` in the background
+$ docker-compose down # stop and destroy
 ```
 
 
 ## Database Support
+
+#### SQLite
 
 On build, an SQLite database is [created and initialized](https://github.com/aspendigital/docker-octobercms/blob/d3b288b9fe0606e32ac3d6466affd2996394bdca/Dockerfile.template#L54-L57) for the Docker image. With that database, users have immediate access to the backend for testing and developing themes and plugins. However, changes made to the built-in database will be lost once the container is stopped and removed.
 
@@ -108,6 +109,8 @@ $ docker run -p 80:80 --name october \
  -v $(pwd)/storage/database.sqlite:/var/www/html/storage/database.sqlite \
  aspendigital/octobercms
 ```
+
+#### MySQL / Postgres
 
 Alternatively, you can host a database remotely using mysql or postgres:
 
@@ -171,7 +174,7 @@ services:
       - ENABLE_CRON=true
 ```
 
-Separating the cron process into it's own container for production via `docker-compose`:
+Separate the cron process into it's own container via `docker-compose`:
 
 ```yml
 version: '2.2'
@@ -205,13 +208,35 @@ services:
 
 ## Command Line Tasks
 
-Run the container in the background using the container name `october` and launch an interactive shell (bash) for the container.
+Run the container in the background and launch an interactive shell (bash) for the container:
 
 
 ```shell
-$ docker run -p 80:80 --name october -d aspendigital/octobercms:latest
+$ docker run -p 80:80 --name containername -d aspendigital/octobercms:latest
+$ docker exec -it containername bash
+```
 
-$ docker exec -it october bash
+Commands can also be run directly, without opening a shell:
+
+```shell
+# artisan
+$ docker exec containername php artisan env
+
+# composer
+$ docker exec containername composer info
+```
+
+A few helper scripts have been added to the image:
+
+```shell
+# `october` invokes `php artisan october:"$@"`
+$ docker exec containername october up
+
+# `artisan` invokes `php artisan "$@"`
+$ docker exec containername artisan plugin:install aspendigital.resizer
+
+# `tinker` invokes `php artisan tinker`. Requires `-it` for an interactive shell
+$ docker exec -it containername tinker
 ```
 
 
@@ -236,10 +261,12 @@ Environment variables can be passed to both docker-compose and October CMS.
 
 #### Docker Entrypoint
 
+The following variables trigger actions run by the [entrypoint script](https://github.com/aspendigital/docker-octobercms/blob/master/docker-oc-entrypoint) at runtime.
+
 | Variable | Default | Action |
 | -------- | ------- | ------ |
-| ENABLE_CRON | false | Enables a cron process |
-| FWD_REMOTE_IP | false | Forwards remote IP from proxy (Apache) |
+| ENABLE_CRON | false | `true` starts a cron process within the container |
+| FWD_REMOTE_IP | false | `true` enables remote IP forwarding from proxy (Apache) |
 
 #### October CMS app environment config
 
