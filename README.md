@@ -35,6 +35,8 @@ To run October CMS using Docker, start a container using the latest image, mappi
 
 ```shell
 $ docker run -p 80:80 --name october aspendigital/octobercms:latest
+# `CTRL-C` to stop
+$ docker rm october  # Destroys the container
 ```
 
  - Visit [http://localhost](http://localhost) using your browser.
@@ -50,6 +52,41 @@ Run the container in detached mode using the container name `october`:
 $ docker run -p 80:80 --name october -d aspendigital/octobercms:latest
 $ docker stop october  # Stops the container. To restart `docker start october`
 $ docker rm october  # Destroys the container
+```
+
+#### Working with local files
+
+Using Docker volumes, you can link your local filesystem to a container.
+
+The container uses the working directory `/var/www/html` for the web server document root. This is where the October CMS codebase resides in the container. You can replace files and folders, or introduce new ones with bind-mounted volumes:
+
+```shell
+# Developing on a plugin
+$ git clone git@github.com:aspendigital/oc-resizer-plugin.git
+$ cd oc-resizer-plugin
+$ docker run -p 80:80 --rm \
+  -v $(pwd):/var/www/html/plugins/aspendigital/resizer \
+  aspendigital/octobercms:latest
+```
+
+Save yourself some keyboards strokes, utilize [docker-compose](https://docs.docker.com/compose/overview/) by introducing a `docker-compose.yml` to your project folder:
+
+```yml
+# docker-compose.yml
+version: '2.2'
+services:
+  web:
+    image: aspendigital/octobercms
+    ports:
+      - 80:80
+    volumes:
+      - $PWD:/var/www/html/plugins/aspendigital/resizer
+```
+With the above example saved in working directory, run:
+
+```shell
+$ docker-compose up -d #start services defined in `docker-compose.yml`
+$ docker-compose down #stop and destroy
 ```
 
 
@@ -118,7 +155,7 @@ services:
 You can start a cron process by setting the environment variable `ENABLE_CRON` to `true`:
 
 ```shell
-$ docker run -p80:80 -e ENABLE_CRON=true aspendigital/octobercms:latest
+$ docker run -p 80:80 -e ENABLE_CRON=true aspendigital/octobercms:latest
 ```
 
 Using `docker-compose`:
