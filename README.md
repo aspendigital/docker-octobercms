@@ -135,19 +135,17 @@ services:
     ports:
       - 80:80
     environment:
-      - TZ=${TZ:-America/Denver}
       - DB_TYPE=mysql
       - DB_HOST=mysql
       - DB_DATABASE=octobercms
-      - DB_USERNAME=october
-      - DB_PASSWORD=october
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
 
   mysql:
     image: mysql:latest
     ports:
       - 3306:3306
     environment:
-      - TZ=${TZ:-America/Denver}
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=octobercms
 ```
