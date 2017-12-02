@@ -13,7 +13,7 @@ RUN apk add --update \
 RUN mkdir ~/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
 RUN git clone https://github.com/aspendigital/docker-octobercms.git
 
-RUN echo "0 */1 * * * (cd /docker-octobercms; git reset --hard origin/master; exec bash update.sh --push)" > /var/spool/cron/crontabs/root
+RUN echo "0 */3 * * * (cd /docker-octobercms; git reset --hard origin/master; exec bash update.sh --push)" > /var/spool/cron/crontabs/root
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
