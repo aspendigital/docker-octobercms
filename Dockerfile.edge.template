@@ -34,6 +34,7 @@ COPY config/docker /usr/src/octobercms-config-docker
 ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
 ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
 ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
+ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
 
 # Consolidated October CMS setup
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
@@ -54,7 +55,12 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
   # set build params
-  php artisan october:util set build && \
+  php -r "use System\\Models\\Parameter; \
+    require __DIR__.'/bootstrap/autoload.php'; \
+    \$app = require_once __DIR__.'/bootstrap/app.php'; \
+    \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
+    Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
+    echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
   # permissions
   chown -R www-data:www-data /var/www/html
 
