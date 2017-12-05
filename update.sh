@@ -177,7 +177,7 @@ function update_buildtags {
   done
 
 	# Recreate README.md
-	sed '/Supported Tags/q' README.md \
+	sed '/## Supported Tags/q' README.md \
    | sed -e "s/CMS Build [0-9]*/CMS Build $STABLE_BUILD/" \
    | sed -e "s/CMS%20Build-[0-9]*/CMS%20Build-$STABLE_BUILD/" \
    | sed -e "s/Edge Build [0-9]*/Edge Build $EDGE_BUILD/" \
