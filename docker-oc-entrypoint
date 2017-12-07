@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# permissions + setfacl
+setfacl -R -d -m u::rwx,g::rwx,o::rx plugins storage themes;
+find . -type d \( -path './plugins' -or -path './storage' -or -path './themes' \) -exec chmod g+ws {} \;
+
 if [[ "$1" == apache2* ]] && [ "${FWD_REMOTE_IP,,}" == "true" ]; then
   a2enmod remoteip -q
   echo 'RemoteIPHeader X-Forwarded-For' > $APACHE_CONFDIR/conf-available/docker-oc-apache.conf

@@ -55,9 +55,7 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
     \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
     Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
     echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
-  chown -R www-data:www-data /var/www/html && \
-  setfacl -R -d -m u::rwx,g::rwx,o::rx plugins storage themes && \
-  find . -type d \( -path './plugins' -or -path './storage' -or -path './themes' \) -exec chmod g+ws {} \;
+  chown -R www-data:www-data /var/www/html
 
 RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
   crontab /etc/cron.d/october-cron
