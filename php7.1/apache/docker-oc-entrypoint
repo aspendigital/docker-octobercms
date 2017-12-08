@@ -15,45 +15,47 @@ elif [ "$1" == cron ]; then
   php artisan schedule:run
 fi
 
-if [ "$CACHE_STORE" == "redis" ] || [ "$QUEUE_DRIVER" == "redis" ] || [ "$SESSION_DRIVER" == "redis" ]; then
-  if [ ! -d "plugins/october/drivers" ]; then
+if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
+  if [ "$CACHE_STORE" == "redis" ] || [ "$QUEUE_DRIVER" == "redis" ] || [ "$SESSION_DRIVER" == "redis" ]; then
+    if [ ! -d "plugins/october/drivers" ]; then
 
-    if [ "$CACHE_STORE" == "redis" ]; then
-      echo 'cache store: redis'
-      export TMP_CACHE_STORE="$CACHE_STORE"
-      unset CACHE_STORE
+      if [ "$CACHE_STORE" == "redis" ]; then
+        echo 'cache store: redis'
+        export TMP_CACHE_STORE="$CACHE_STORE"
+        unset CACHE_STORE
+      fi
+
+      if [ "$QUEUE_DRIVER" == "redis" ]; then
+        echo 'queue driver: redis'
+        export TMP_QUEUE_DRIVER="$QUEUE_DRIVER"
+        unset QUEUE_DRIVER
+      fi
+
+      if [ "$SESSION_DRIVER" == "redis" ]; then
+        echo 'session driver: redis'
+        export TMP_SESSION_DRIVER="$SESSION_DRIVER"
+        unset SESSION_DRIVER
+      fi
+
+      echo 'October Drivers required for redis support.'
+      php artisan plugin:install october.drivers
+
+      if [ "$TMP_CACHE_STORE" == "redis" ]; then
+        export CACHE_STORE="$TMP_CACHE_STORE"
+        unset TMP_CACHE_STORE
+      fi
+
+      if [ "$TMP_QUEUE_DRIVER" == "redis" ]; then
+        export QUEUE_DRIVER="$TMP_QUEUE_DRIVER"
+        unset TMP_QUEUE_DRIVER
+      fi
+
+      if [ "$TMP_SESSION_DRIVER" == "redis" ]; then
+        export SESSION_DRIVER="$TMP_SESSION_DRIVER"
+        unset TMP_SESSION_DRIVER
+      fi
+
     fi
-
-    if [ "$QUEUE_DRIVER" == "redis" ]; then
-      echo 'queue driver: redis'
-      export TMP_QUEUE_DRIVER="$QUEUE_DRIVER"
-      unset QUEUE_DRIVER
-    fi
-
-    if [ "$SESSION_DRIVER" == "redis" ]; then
-      echo 'session driver: redis'
-      export TMP_SESSION_DRIVER="$SESSION_DRIVER"
-      unset SESSION_DRIVER
-    fi
-
-    echo 'October Drivers required for redis support.'
-    php artisan plugin:install october.drivers
-
-    if [ "$TMP_CACHE_STORE" == "redis" ]; then
-      export CACHE_STORE="$TMP_CACHE_STORE"
-      unset TMP_CACHE_STORE
-    fi
-
-    if [ "$TMP_QUEUE_DRIVER" == "redis" ]; then
-      export QUEUE_DRIVER="$TMP_QUEUE_DRIVER"
-      unset TMP_QUEUE_DRIVER
-    fi
-
-    if [ "$TMP_SESSION_DRIVER" == "redis" ]; then
-      export SESSION_DRIVER="$TMP_SESSION_DRIVER"
-      unset TMP_SESSION_DRIVER
-    fi
-
   fi
 fi
 
