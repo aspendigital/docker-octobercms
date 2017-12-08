@@ -52,7 +52,6 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   sed -i "s/'CMS_EDGE_UPDATES', false/'CMS_EDGE_UPDATES', true/" config/docker/cms.php && \
   # setup database
   touch storage/database.sqlite && \
-  chmod 666 storage/database.sqlite && \
   php artisan october:up && \
   # set build params
   php -r "use System\\Models\\Parameter; \
@@ -61,6 +60,8 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
     \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
     Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
     echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
+  # Add October Drivers
+  php artisan plugin:install october.drivers && \
   # permissions
   chown -R www-data:www-data /var/www/html && \
   find . -type d \( -path './plugins' -or  -path './storage' -or  -path './themes' -or  -path './plugins/*' -or  -path './storage/*' -or  -path './themes/*' \) -exec chmod g+ws {} \;
