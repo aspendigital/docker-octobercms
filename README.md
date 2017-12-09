@@ -105,7 +105,7 @@ $ docker-compose down # stop and destroy
 
 On build, an SQLite database is [created and initialized](https://github.com/aspendigital/docker-octobercms/blob/d3b288b9fe0606e32ac3d6466affd2996394bdca/Dockerfile.template#L54-L57) for the Docker image. With that database, users have immediate access to the backend for testing and developing themes and plugins. However, changes made to the built-in database will be lost once the container is stopped and removed.
 
-When projects require a persistent SQLite database, copy or create a new database to the host which can be used as a bind mount.
+When projects require a persistent SQLite database, copy or create a new database to the host which can be used as a bind mount:
 
 ```shell
 # Create and provision a new SQLite database:
@@ -122,22 +122,10 @@ $ docker run -p 80:80 --name october \
 
 #### MySQL / Postgres
 
-Alternatively, you can host a database remotely using mysql or postgres:
-
-
-```
-$ docker run -p 80:80 --name october \
-  -e DB_TYPE=mysql \
-  -e DB_HOST=example.rds.amazonaws.com \
-  -e DB_DATABASE=example \
-  -e DB_USERNAME=username \
-  -e DB_PASSWORD=password \
-  aspendigital/octobercms
-```
-
-Or host the database using another container via `docker-compose`:
+Alternatively, you can host the database using another container:
 
 ```yml
+#docker-compose.yml
 version: '2.2'
 services:
   web:
@@ -146,7 +134,7 @@ services:
       - 80:80
     environment:
       - DB_TYPE=mysql
-      - DB_HOST=mysql
+      - DB_HOST=mysql #DB_HOST should match the service name of the database container
       - DB_DATABASE=octobercms
       - DB_USERNAME=root
       - DB_PASSWORD=root
@@ -159,7 +147,12 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=octobercms
 ```
+Provision a new database with `october:up`:
 
+```ssh
+$ docker-compose up -d
+$ docker-compose exec web php artisan october:up
+```
 
 ## Cron
 
@@ -169,22 +162,10 @@ You can start a cron process by setting the environment variable `ENABLE_CRON` t
 $ docker run -p 80:80 -e ENABLE_CRON=true aspendigital/octobercms:latest
 ```
 
-Using `docker-compose`:
+Separate the cron process into it's own container:
 
 ```yml
-version: '2.2'
-services:
-  web:
-    image: aspendigital/octobercms:latest
-    ports:
-      - 80:80
-    environment:
-      - ENABLE_CRON=true
-```
-
-Separate the cron process into it's own container via `docker-compose`:
-
-```yml
+#docker-compose.yml
 version: '2.2'
 services:
   web:
