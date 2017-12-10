@@ -237,6 +237,13 @@ On image build, a default `.env` is [created](https://github.com/aspendigital/do
 
 > __Note__: October CMS settings stored in a site's database override the config. Active theme, mail configuration, and other settings which are saved in the database will ultimately override configuration values.
 
+#### PHP configuration
+
+Recommended [settings for opcache and PHP are applied on image build](https://github.com/aspendigital/docker-octobercms/blob/f3c545fd84e293a67e63f86bf94f2bf2ab22ca15/Dockerfile.template#L9-L25).
+
+Values set in `docker-oc-php.ini` can be overridden by passing one of the supported PHP environment variables defined below.
+
+To customize the PHP configuration further, add or replace `.ini` files found in `/usr/local/etc/php/conf.d/`.
 
 ### Environment Variables
 
@@ -256,6 +263,10 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | -------- | ------- | ------ |
 | ENABLE_CRON | false | `true` starts a cron process within the container |
 | FWD_REMOTE_IP | false | `true` enables remote IP forwarding from proxy (Apache) |
+| PHP_DISPLAY_ERRORS | off | Override value for `display_errors` in docker-oc-php.ini |
+| PHP_POST_MAX_SIZE | 32M | Override value for `post_max_size` in docker-oc-php.ini |
+| PHP_MEMORY_LIMIT | 128M | Override value for `memory_limit` in docker-oc-php.ini |
+| PHP_UPLOAD_MAX_FILESIZE | 32M | Override value for `upload_max_filesize` in docker-oc-php.ini |
 
 #### October CMS app environment config
 
