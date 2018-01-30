@@ -30,10 +30,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG v1.0.432
-ENV OCTOBERCMS_CHECKSUM f4585eef0271f59c0aac720acb8a7d7c5a4242b6
-ENV OCTOBERCMS_CORE_BUILD 432
-ENV OCTOBERCMS_CORE_HASH 6204770ebb86addeeb63f6a294055e9f
+ENV OCTOBERCMS_TAG v1.0.433
+ENV OCTOBERCMS_CHECKSUM d9f96d3b9ec25c85a7b02e40925a7c941bbe66d0
+ENV OCTOBERCMS_CORE_BUILD 433
+ENV OCTOBERCMS_CORE_HASH 8c31c873cd68e4dd47eca934b08a89b8
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
