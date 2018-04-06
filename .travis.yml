@@ -48,6 +48,8 @@ before_script:
 script:
   - docker build -t "$IMAGE:$TAG" -f $DOCKERFILE .
   - ~/official-images/test/run.sh "$IMAGE:$TAG"
+  - php --version
+  - composer --version
   - docker run --rm "$IMAGE:$TAG" vendor/bin/phpunit
 
 after_success:
