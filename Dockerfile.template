@@ -41,12 +41,10 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
-  echo "Update composer.json: Drop october module dependencies and set 'october/rain' reference" && \
-  # drop module dependencies - https://github.com/octobercms/october/issues/2975
-  sed -i.orig '/october\/[system|backend|cms]/,+0 d' composer.json && \
   # match build dependencies
-  sed -i "s/\(\"october\/\(rain*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
-  egrep -o "['\"]october\/[rain]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
+  echo "Update composer.json: Set explicit build references for october module dependencies" && \
+  sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
+  egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   # setup docker env
   echo 'APP_ENV=docker' > .env && \
