@@ -5,6 +5,10 @@ services:
 
 env:
   matrix:
+    - VARIANT=php7.2/apache
+      BRANCH=stable
+    - VARIANT=php7.2/fpm
+      BRANCH=stable
     - VARIANT=php7.1/apache
       BRANCH=stable
     - VARIANT=php7.1/fpm
@@ -14,6 +18,10 @@ env:
     - VARIANT=php7.0/fpm
       BRANCH=stable
 
+    - VARIANT=php7.2/apache
+      BRANCH=edge
+    - VARIANT=php7.2/fpm
+      BRANCH=edge
     - VARIANT=php7.1/apache
       BRANCH=edge
     - VARIANT=php7.1/fpm

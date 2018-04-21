@@ -1,0 +1,51 @@
+#!/bin/bash
+set -e
+
+if [ "${INIT_PLUGINS,,}" == "true" ] || [ "${INIT_PLUGINS,,}" == "force" ]; then
+  echo 'Initializing plugin vendor folders...'
+  for i in $(echo plugins/*/*); do
+    if [ -f "$i/composer.json" ]; then
+      if [ "${INIT_PLUGINS,,}" == "force" ] || [ ! -d "$i/vendor" ]; then
+        echo " - $i"
+        composer --working-dir="$i" --no-interaction --quiet install
+        chown -R www-data:www-data $i
+      fi
+    fi
+  done
+fi
+
+if [[ "$1" == apache2* ]] && [ "${FWD_REMOTE_IP,,}" == "true" ]; then
+  a2enmod remoteip -q
+  echo 'RemoteIPHeader X-Forwarded-For' > $APACHE_CONFDIR/conf-available/docker-oc-apache.conf
+  a2enconf docker-oc-apache -q
+fi
+
+if [ "${ENABLE_CRON,,}" == "true" ]; then
+  php artisan schedule:run # required to prime db connection
+  cron
+  echo 'Cron enabled.'
+elif [ "$1" == cron ]; then
+  php artisan schedule:run
+fi
+
+if [ ! -z "$PHP_DISPLAY_ERRORS" ]; then
+  echo "php.ini set display_errors=$PHP_DISPLAY_ERRORS"
+  sed -i "/display_errors=*/c\display_errors=$PHP_DISPLAY_ERRORS" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_POST_MAX_SIZE" ]; then
+  echo "php.ini set post_max_size=$PHP_POST_MAX_SIZE"
+  sed -i "/post_max_size=*/c\post_max_size=$PHP_POST_MAX_SIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_MEMORY_LIMIT" ]; then
+  echo "php.ini set memory_limit=$PHP_MEMORY_LIMIT"
+  sed -i "/memory_limit=*/c\memory_limit=$PHP_MEMORY_LIMIT" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
+  echo "php.ini set upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE"
+  sed -i "/upload_max_filesize=*/c\upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+exec "$@"

@@ -1,10 +1,10 @@
 FROM php:7.0-fpm
 
-RUN apt-get update && apt-get install -y cron git-core nano \
-  libjpeg-dev libmcrypt-dev libpng12-dev libpq-dev libsqlite3-dev && \
+RUN apt-get update && apt-get install -y cron git-core jq vim \
+  libjpeg-dev libpng-dev libpq-dev libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr && \
-  docker-php-ext-install gd mcrypt mysqli opcache pdo_pgsql pdo_mysql zip
+  docker-php-ext-install gd mysqli opcache pdo_pgsql pdo_mysql zip
 
 RUN { \
     echo 'opcache.memory_consumption=128'; \

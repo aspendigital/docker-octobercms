@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.2-fpm
 
 RUN apt-get update && apt-get install -y cron git-core jq vim \
   libjpeg-dev libpng-dev libpq-dev libsqlite3-dev && \
@@ -26,27 +26,24 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
 
-RUN a2enmod rewrite
+
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG v1.0.434
-ENV OCTOBERCMS_CHECKSUM 0d22bf278d6c5968aa36df53d21169c44516c197
-ENV OCTOBERCMS_CORE_BUILD 434
-ENV OCTOBERCMS_CORE_HASH eb0dccd7698b8d533b4758b812ea10ad
+ENV OCTOBERCMS_TAG v1.0.435
+ENV OCTOBERCMS_CHECKSUM 44c99477bc0ab637ae044b778ec990c79bf4b3da
+ENV OCTOBERCMS_CORE_BUILD 435
+ENV OCTOBERCMS_CORE_HASH f497ead30f08ead41e0820aa2ea03e9b
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
-  echo "Update composer.json: Set explicit build references for october module dependencies" && \
-  sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
-  egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
+  sed -i "s/'CMS_EDGE_UPDATES', false/'CMS_EDGE_UPDATES', true/" config/docker/cms.php && \
   touch storage/database.sqlite && \
-  chmod 666 storage/database.sqlite && \
   php artisan october:up && \
   php -r "use System\\Models\\Parameter; \
     require __DIR__.'/bootstrap/autoload.php'; \
@@ -70,4 +67,4 @@ RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
 COPY docker-oc-entrypoint /usr/local/bin/
 
 ENTRYPOINT ["docker-oc-entrypoint"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]

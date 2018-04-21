@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.2-fpm
 
 RUN apt-get update && apt-get install -y cron git-core jq vim \
   libjpeg-dev libpng-dev libpq-dev libsqlite3-dev && \
@@ -26,7 +26,7 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
 
-RUN a2enmod rewrite
+
 
 COPY config/docker /usr/src/octobercms-config-docker
 
@@ -70,4 +70,4 @@ RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
 COPY docker-oc-entrypoint /usr/local/bin/
 
 ENTRYPOINT ["docker-oc-entrypoint"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
