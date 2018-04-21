@@ -41,9 +41,6 @@ RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/octobe
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
   tar --strip=1 -xzf octobercms.tar.gz && \
   rm octobercms.tar.gz && \
-  # drop module dependencies - https://github.com/octobercms/october/issues/2975
-  echo "Update composer.json: Drop october module dependencies" && \
-  sed -i.orig '/october\/[system|backend|cms]/,+0 d' composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   # setup docker env
   echo 'APP_ENV=docker' > .env && \

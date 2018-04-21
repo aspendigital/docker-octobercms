@@ -50,6 +50,7 @@ script:
   - ~/official-images/test/run.sh "$IMAGE:$TAG"
   - docker run --rm "$IMAGE:$TAG" php --version
   - docker run --rm "$IMAGE:$TAG" composer --version
+  - docker run --rm "$IMAGE:$TAG" composer info | grep october
   - docker run --rm "$IMAGE:$TAG" vendor/bin/phpunit
 
 after_success:
