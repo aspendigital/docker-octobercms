@@ -277,11 +277,14 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | -------- | ------- | ------ |
 | ENABLE_CRON | false | `true` starts a cron process within the container |
 | FWD_REMOTE_IP | false | `true` enables remote IP forwarding from proxy (Apache) |
+| GIT_CHECKOUT |  | Checkout branch, tag, commit within the container. Runs `git checkout $GIT_CHECKOUT` |
+| GIT_MERGE_PR |  | Pass GitHub pull request number to merge PR within the container for testing |
 | INIT_PLUGINS | false | `true` runs composer install in plugins folders where no 'vendor' folder exists. `force` runs composer install regardless. Helpful when using git submodules for plugins. |
 | PHP_DISPLAY_ERRORS | off | Override value for `display_errors` in docker-oc-php.ini |
 | PHP_POST_MAX_SIZE | 32M | Override value for `post_max_size` in docker-oc-php.ini |
 | PHP_MEMORY_LIMIT | 128M | Override value for `memory_limit` in docker-oc-php.ini |
 | PHP_UPLOAD_MAX_FILESIZE | 32M | Override value for `upload_max_filesize` in docker-oc-php.ini |
+| UNIT_TEST |  | `true` runs all October CMS unit tests. Pass test filename to run a specific test. |
 
 #### October CMS app environment config
 
