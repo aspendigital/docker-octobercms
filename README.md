@@ -285,6 +285,7 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | PHP_MEMORY_LIMIT | 128M | Override value for `memory_limit` in docker-oc-php.ini |
 | PHP_UPLOAD_MAX_FILESIZE | 32M | Override value for `upload_max_filesize` in docker-oc-php.ini |
 | UNIT_TEST |  | `true` runs all October CMS unit tests. Pass test filename to run a specific test. |
+| VERSION_INFO | false | `true` outputs container current commit, php version, and dependency info on start |
 
 #### October CMS app environment config
 

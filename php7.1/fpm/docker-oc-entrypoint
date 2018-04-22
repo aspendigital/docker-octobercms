@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-# Display current commit, php version, and dependency info in develop mode
-if [ "${OCTOBERCMS_TAG,,}" == "develop" ]; then
+# Display current commit, php version, and dependency info
+if [ "${VERSION_INFO,,}" == "true" ]; then
+  echo -e "October CMS - $OCTOBERCMS_TAG\n---"
   if [ -d ".git" ]; then
-    echo -e "Develop October CMS\n---"
     git log --pretty=format:"%s%n%C(yellow)%H%Creset" -1
     echo -e "\n---"
-    php --version | grep PHP -m 1
-    composer info | grep october | awk '{print $1 ": " $2}'
-    echo "---"
   fi
+  php --version | grep PHP -m 1
+  composer info | grep october | awk '{print $1 ": " $2}'
+  echo "---"
 fi
 
 # Checkout branch, tag, commit within the container
