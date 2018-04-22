@@ -56,6 +56,8 @@ function update_dockerfiles {
   [ "$1" = "edge" ] && local build=$EDGE_BUILD || local build=$STABLE_BUILD
   [ "$1" = "edge" ] && local ext=".edge" || local ext=""
 
+  [ "$1" = "develop" ] && local ext=".develop"
+
   local phpVersions=( php7.*/ )
 
   phpVersions=( "${phpVersions[@]%/}" )
@@ -173,6 +175,24 @@ function update_buildtags {
   			fi
   		fi
   		edgeTagsMarkdown+="- $(join ', ' "${fullEdgeAliases[@]}"): [$dir/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.edge)\n"
+
+      # Build develop tags
+      [ -f "$dir/Dockerfile.develop" ] || continue
+
+      developAliases=( develop )
+
+      phpDevelopVersionVariantAliases=( "${developAliases[@]/%/-$phpVersion-$variant}" )
+      phpDevelopVersionVariantAliases=( "${phpDevelopVersionVariantAliases[@]//latest-/}" )
+
+      fullDevelopAliases=( "${phpDevelopVersionVariantAliases[@]}" )
+
+      if [ "$phpVersion" = "$defaultPhpVersion" ]; then
+  			if [ "$variant" = "$defaultVariant" ]; then
+  				fullDevelopAliases+=( "${developAliases[@]}" )
+  			fi
+  		fi
+  		developTagsMarkdown+="- $(join ', ' "${fullDevelopAliases[@]}"): [$dir/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.develop)\n"
+
   	done
   done
 
@@ -185,6 +205,8 @@ function update_buildtags {
 	echo -e "\n${tagsMarkdown[*]}" >> README_TMP.md
   echo -e "\n### Edge Tags" >> README_TMP.md
   echo -e "\n${edgeTagsMarkdown[*]}" >> README_TMP.md
+  echo -e "\n### Develop Tags" >> README_TMP.md
+  echo -e "\n${developTagsMarkdown[*]}" >> README_TMP.md
 	sed -n -e '/Legacy Tags/,$p' README.md >> README_TMP.md
 	mv README_TMP.md README.md
 }
@@ -200,6 +222,8 @@ function update_repo {
     git commit -m "Build $STABLE_BUILD" -m "Automated update"
   elif [ "$EDGE_UPDATE" -eq 1 ]; then
     git commit -m "Edge Build $EDGE_BUILD" -m "Automated update"
+  elif [ "$DEVELOP_UPDATE" -eq 1 ]; then
+    git commit -m "Develop update" -m "Automated update"
   fi
 
   git push
@@ -275,13 +299,20 @@ echo " - Fetching latest commit on develop branch..."
 GITHUB_LATEST_COMMIT=$( curl -fsS --connect-timeout 15 https://api.github.com/repos/octobercms/october/commits/develop | jq -r '.sha') || exit 1;
 [ -z "$GITHUB_LATEST_COMMIT" ] && exit 1 || echo "    Latest commit hash: $GITHUB_LATEST_COMMIT";
 
-echo " - Generating develop checksum..."
-GITHUB_LATEST_CHECKSUM=$(update_checksum $GITHUB_LATEST_COMMIT)
+if [ "$GITHUB_LATEST_COMMIT" != "$OCTOBERCMS_DEVELOP_COMMIT" ]; then
+  DEVELOP_UPDATE=1
+  echo "    New DEVELOP commit";
+  echo "     SHA: $GITHUB_LATEST_COMMIT"
+  echo " - Generating develop checksum..."
+  GITHUB_LATEST_CHECKSUM=$(update_checksum $GITHUB_LATEST_COMMIT)
+else
+  DEVELOP_UPDATE=0
+fi
 
 echo " - Copying entrypoint and config..."
 copy_entrypoint_config
 
-if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
+if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ] || [ "$DEVELOP_UPDATE" -eq 1 ]; then
   echo " - Setting build values..."
   echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && echo "OCTOBERCMS_BUILD=$STABLE_BUILD" > version
   echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && echo "OCTOBERCMS_CORE_HASH=$STABLE_CORE_HASH" >> version
@@ -291,14 +322,14 @@ if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ]; then
   echo "    OCTOBERCMS_EDGE_CHECKSUM: $EDGE_CHECKSUM" && echo "OCTOBERCMS_EDGE_CHECKSUM=$EDGE_CHECKSUM" >> version
   echo "    OCTOBERCMS_DEVELOP_COMMIT: $GITHUB_LATEST_COMMIT" && echo "OCTOBERCMS_DEVELOP_COMMIT=$GITHUB_LATEST_COMMIT" >> version
   echo "    OCTOBERCMS_DEVELOP_CHECKSUM: $GITHUB_LATEST_CHECKSUM" && echo "OCTOBERCMS_DEVELOP_CHECKSUM=$GITHUB_LATEST_CHECKSUM" >> version
-  update_dockerfiles && update_dockerfiles edge
+  update_dockerfiles && update_dockerfiles edge && update_dockerfiles develop
   update_buildtags
   [ "$PUSH" ] && update_repo || echo ' - No changes committed.'
 
   if [ "$SLACK_WEBHOOK_URL" ]; then
     echo -n " - Posting update to Slack..."
     curl -X POST -fsS --connect-timeout 15 --data-urlencode "payload={
-	    'text': 'October CMS Build $STABLE_BUILD | Edge Build $EDGE_BUILD',
+	    'text': 'October CMS Build $STABLE_BUILD | Edge Build $EDGE_BUILD | Develop $GITHUB_LATEST_COMMIT',
     }" $SLACK_WEBHOOK_URL
     echo -e ""
   fi

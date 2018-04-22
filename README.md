@@ -35,6 +35,16 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 - `edge-build.435-php7.0-apache`, `edge-php7.0-apache`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.edge)
 - `edge-build.435-php7.0-fpm`, `edge-php7.0-fpm`: [php7.0/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.edge)
 
+
+### Develop Tags
+
+- `develop-php7.2-apache`: [php7.2/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.develop)
+- `develop-php7.2-fpm`: [php7.2/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/fpm/Dockerfile.develop)
+- `develop-php7.1-apache`, `develop`: [php7.1/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.develop)
+- `develop-php7.1-fpm`: [php7.1/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.develop)
+- `develop-php7.0-apache`: [php7.0/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.develop)
+- `develop-php7.0-fpm`: [php7.0/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.develop)
+
 ### Legacy Tags
 
 > October CMS build 420+ requires PHP version 7.0 or higher

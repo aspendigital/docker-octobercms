@@ -31,6 +31,19 @@ env:
     - VARIANT=php7.0/fpm
       BRANCH=edge
 
+    - VARIANT=php7.2/apache
+      BRANCH=develop
+    - VARIANT=php7.2/fpm
+      BRANCH=develop
+    - VARIANT=php7.1/apache
+      BRANCH=develop
+    - VARIANT=php7.1/fpm
+      BRANCH=develop
+    - VARIANT=php7.0/apache
+      BRANCH=develop
+    - VARIANT=php7.0/fpm
+      BRANCH=develop
+
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
@@ -44,13 +57,16 @@ before_script:
       BUILD="build.$OCTOBERCMS_BUILD";
       TAG="${VARIANT//$SLASH/-}";
       TAG_LONG="$BUILD-$TAG";
-    else
+    elif [ "$BRANCH" == "edge" ]; then
       DOCKERFILE="Dockerfile.edge";
       BUILD="edge-build.$OCTOBERCMS_EDGE_BUILD";
       TAG="edge-${VARIANT//$SLASH/-}";
       TAG_LONG="$BUILD-${VARIANT//$SLASH/-}";
+    elif [ "$BRANCH" == "develop" ]; then
+      DOCKERFILE="Dockerfile.develop";
+      TAG="develop-${VARIANT//$SLASH/-}";
     fi;
-    echo "$BUILD | $TAG | $DOCKERFILE";
+    echo "$TAG | $DOCKERFILE";
   - cd "$VARIANT"
 
 script:
@@ -66,19 +82,23 @@ after_success:
       docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
       docker push "$IMAGE:$TAG";
 
-      docker build -t "$IMAGE:$TAG_LONG" -f $DOCKERFILE .;
-      docker push "$IMAGE:$TAG_LONG";
+      if [ ! -z "$TAG_LONG" ]; then
+        docker build -t "$IMAGE:$TAG_LONG" -f $DOCKERFILE .;
+        docker push "$IMAGE:$TAG_LONG";
+      fi
 
       if [ "$VARIANT" == "php7.1/apache" ]; then
-        docker build -t "$IMAGE:$BUILD" -f $DOCKERFILE .;
-        docker push "$IMAGE:$BUILD";
-
+        if [ ! -z "$BUILD" ]; then
+          docker build -t "$IMAGE:$BUILD" -f $DOCKERFILE .;
+          docker push "$IMAGE:$BUILD";
+        fi
+        
         if [ "$BRANCH" == "stable" ]; then
           docker build -t "$IMAGE:latest" -f $DOCKERFILE .;
           docker push "$IMAGE:latest";
         else
-          docker build -t "$IMAGE:edge" -f $DOCKERFILE .;
-          docker push "$IMAGE:edge";
+          docker build -t "$IMAGE:$BRANCH" -f $DOCKERFILE .;
+          docker push "$IMAGE:$BRANCH";
         fi
       fi
 
