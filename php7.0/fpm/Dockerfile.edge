@@ -26,6 +26,8 @@ RUN { \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 
 
 COPY config/docker /usr/src/octobercms-config-docker
