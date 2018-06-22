@@ -32,10 +32,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG v1.0.436
-ENV OCTOBERCMS_CHECKSUM 4cd9017bfb01ad53f8a3419de6b4e65cabee0bff
-ENV OCTOBERCMS_CORE_BUILD 436
-ENV OCTOBERCMS_CORE_HASH a0b720c8fd902d65b9a28adc1c7fea7f
+ENV OCTOBERCMS_TAG v1.0.437
+ENV OCTOBERCMS_CHECKSUM e0230dac67b0ece92aaf161b4f097dcfacc7b940
+ENV OCTOBERCMS_CORE_BUILD 437
+ENV OCTOBERCMS_CORE_HASH d4a4e1f641e333ff5c26037f86cfe619
 
 RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
   echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
