@@ -75,7 +75,6 @@ script:
   - docker run --rm "$IMAGE:$TAG" php --version
   - docker run --rm "$IMAGE:$TAG" composer --version
   - docker run --rm "$IMAGE:$TAG" composer info | grep october
-  - docker run --rm "$IMAGE:$TAG" vendor/bin/phpunit
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
@@ -104,3 +103,4 @@ after_success:
 
     fi
   - docker images;
+  - docker run --rm "$IMAGE:$TAG" vendor/bin/phpunit
