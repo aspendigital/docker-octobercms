@@ -293,7 +293,7 @@ List of variables used in `config/docker`
 
 | Variable | Default |
 | -------- | ------- |
-| APP_DEBUG | true |
+| APP_DEBUG | false |
 | APP_URL | http://localhost |
 | APP_KEY | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
 | CACHE_STORE | file |
