@@ -37,19 +37,22 @@ ENV OCTOBERCMS_TAG develop
 ENV OCTOBERCMS_DEVELOP_CHECKSUM %%OCTOBERCMS_DEVELOP_CHECKSUM%%
 ENV OCTOBERCMS_DEVELOP_COMMIT %%OCTOBERCMS_DEVELOP_COMMIT%%
 
-RUN git clone https://github.com/octobercms/october.git -b develop .
-RUN composer install --no-interaction --prefer-dist --no-scripts
-RUN git status && git reset --hard HEAD
-
-# setup docker env
-RUN echo 'APP_ENV=docker' > .env && \
+# Consolidated October CMS setup
+RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
+  # download dependencies
+  composer install --no-interaction --prefer-dist --no-scripts && \
+  composer clearcache && \
+  # git reset to ensure October modules are in sync with the repo after composer install
+  git status && git reset --hard HEAD && \
+  # setup docker env
+  echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
   echo 'config/docker' >> .git/info/exclude && \
   # setup database
   touch storage/database.sqlite && \
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
-  # Add October Drivers
+  # add October Drivers
   php artisan plugin:install october.drivers && \
   # permissions
   chown -R www-data:www-data /var/www/html && \

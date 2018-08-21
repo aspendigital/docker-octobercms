@@ -36,11 +36,11 @@ ENV OCTOBERCMS_TAG develop
 ENV OCTOBERCMS_DEVELOP_CHECKSUM 4dda6896fe856971bff6d88f5f5354661a458f33
 ENV OCTOBERCMS_DEVELOP_COMMIT eb2419cc74ce5ebcb368e29b23e2636d6fec18d8
 
-RUN git clone https://github.com/octobercms/october.git -b develop .
-RUN composer install --no-interaction --prefer-dist --no-scripts
-RUN git status && git reset --hard HEAD
-
-RUN echo 'APP_ENV=docker' > .env && \
+RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
+  composer install --no-interaction --prefer-dist --no-scripts && \
+  composer clearcache && \
+  git status && git reset --hard HEAD && \
+  echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
   echo 'config/docker' >> .git/info/exclude && \
   touch storage/database.sqlite && \

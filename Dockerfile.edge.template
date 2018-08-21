@@ -39,31 +39,37 @@ ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
 ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
 
 # Consolidated October CMS setup
-RUN curl -o octobercms.tar.gz -fSL https://codeload.github.com/octobercms/october/tar.gz/{$OCTOBERCMS_TAG} && \
-  echo "$OCTOBERCMS_CHECKSUM *octobercms.tar.gz" | sha1sum -c - && \
-  tar --strip=1 -xzf octobercms.tar.gz && \
-  rm octobercms.tar.gz && \
+RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG --depth 1 . && \
+  # download dependencies
   composer install --no-interaction --prefer-dist --no-scripts && \
+  composer clearcache && \
+  # git reset to ensure October modules are in sync with the repo after composer install
+  git status && git reset --hard HEAD && \
+  # remove git repo
+  rm -rf .git && \
   # setup docker env
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
-  # enable edge updates
-  sed -i "s/'CMS_EDGE_UPDATES', false/'CMS_EDGE_UPDATES', true/" config/docker/cms.php && \
   # setup database
   touch storage/database.sqlite && \
+  chmod 666 storage/database.sqlite && \
   php artisan october:up && \
-  # set build params
-  php -r "use System\\Models\\Parameter; \
-    require __DIR__.'/bootstrap/autoload.php'; \
-    \$app = require_once __DIR__.'/bootstrap/app.php'; \
-    \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
-    Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
-    echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";" && \
-  # Add October Drivers
+  # add October Drivers
   php artisan plugin:install october.drivers && \
   # permissions
   chown -R www-data:www-data /var/www/html && \
   find . -type d \( -path './plugins' -or  -path './storage' -or  -path './themes' -or  -path './plugins/*' -or  -path './storage/*' -or  -path './themes/*' \) -exec chmod g+ws {} \;
+
+# Enable edge updates
+RUN sed -i "s/'CMS_EDGE_UPDATES', false/'CMS_EDGE_UPDATES', true/" config/docker/cms.php
+
+# Set October build params
+RUN php -r "use System\\Models\\Parameter; \
+    require __DIR__.'/bootstrap/autoload.php'; \
+    \$app = require_once __DIR__.'/bootstrap/app.php'; \
+    \$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap(); \
+    Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
+    echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";"
 
 # Initialize crontab for the October CMS scheduler
 RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
