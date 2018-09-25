@@ -33,8 +33,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY config/docker /usr/src/octobercms-config-docker
 
 ENV OCTOBERCMS_TAG develop
-ENV OCTOBERCMS_DEVELOP_CHECKSUM e59745673fb4e9d4ebbfcb74ba379cf16a70ab57
-ENV OCTOBERCMS_DEVELOP_COMMIT aeb7616d063121d47cfb5aefe07fa9524e4a522b
+ENV OCTOBERCMS_DEVELOP_CHECKSUM 02196f73a3d635df678cef5f082b0d294d4e3ef3
+ENV OCTOBERCMS_DEVELOP_COMMIT edcc4af68aa70dc4b84b687e34edb90d14191ca0
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
   composer install --no-interaction --prefer-dist --no-scripts && \
