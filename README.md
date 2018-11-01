@@ -154,7 +154,7 @@ services:
       - DB_PASSWORD=root
 
   mysql:
-    image: mysql:latest
+    image: mysql:5.7
     ports:
       - 3306:3306
     environment:
