@@ -26,15 +26,16 @@ RUN { \
 RUN pecl install xdebug
 
 RUN { \
-    echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" ; \
+    echo "#zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" ; \
     echo 'xdebug.remote_enable=on'; \
     echo 'xdebug.remote_autostart=off'; \
+    echo 'xdebug.remote_host=host.docker.internal'; \
   } > /usr/local/etc/php/conf.d/docker-xdebug-php.ini
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
-
-ENV COMPOSER_ALLOW_SUPERUSER=1
 
 
 

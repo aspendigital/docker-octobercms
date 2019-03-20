@@ -53,7 +53,7 @@ if [ ! -z "$UNIT_TEST" ]; then
   if [ "${UNIT_TEST,,}" == "true" ]; then
     vendor/bin/phpunit
   elif [ ! -f "$UNIT_TEST" ]; then
-    error "File '$UNIT_TEST' does not exist."
+    echo "File '$UNIT_TEST' does not exist."
   elif [ -f "$UNIT_TEST" ]; then
     echo "Running single test: $UNIT_TEST"
     vendor/bin/phpunit $UNIT_TEST
@@ -110,6 +110,28 @@ fi
 if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
   echo "php.ini set upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE"
   sed -i "/upload_max_filesize=*/c\upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
+  echo "php.ini set upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE"
+  sed -i "/upload_max_filesize=*/c\upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+# Xdebug config
+if [ "${XDEBUG_ENABLE,,}" == "true" ]; then
+  if [ ! -f "/usr/local/etc/php/conf.d/docker-xdebug-php.ini" ]; then
+    echo "Xdebug config not found. Try the develop image" && exit 1;
+  fi
+  sed -i "/zend_extension/s/^#//" /usr/local/etc/php/conf.d/docker-xdebug-php.ini
+  echo 'Xdebug enabled'
+fi
+
+if [ ! -z "$XDEBUG_REMOTE_HOST" ]; then
+  if [ ! -f "/usr/local/etc/php/conf.d/docker-xdebug-php.ini" ]; then
+    echo "Xdebug config not found. Try the develop image" && exit 1;
+  fi
+  echo "set xdebug.remote_host=$XDEBUG_REMOTE_HOST"
+  sed -i "/xdebug.remote_host=*/c\xdebug.remote_host=$XDEBUG_REMOTE_HOST" /usr/local/etc/php/conf.d/docker-xdebug-php.ini
 fi
 
 exec "$@"

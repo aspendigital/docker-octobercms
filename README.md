@@ -286,6 +286,8 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | PHP_UPLOAD_MAX_FILESIZE | 32M | Override value for `upload_max_filesize` in docker-oc-php.ini |
 | UNIT_TEST |  | `true` runs all October CMS unit tests. Pass test filename to run a specific test. |
 | VERSION_INFO | false | `true` outputs container current commit, php version, and dependency info on start |
+| XDEBUG_ENABLE | false | `true` enables the Xdebug PHP extension |
+| XDEBUG_REMOTE_HOST | host.docker.internal | Override value for `xdebug.remote_host` in docker-xdebug-php.ini |
 
 #### October CMS app environment config
 
