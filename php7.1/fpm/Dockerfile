@@ -1,10 +1,11 @@
 FROM php:7.1-fpm
 
-RUN apt-get update && apt-get install -y cron git-core jq vim \
-  libjpeg-dev libpng-dev libpq-dev libsqlite3-dev libwebp-dev && \
+RUN apt-get update && apt-get install -y cron git-core jq unzip vim zip \
+  libjpeg-dev libpng-dev libpq-dev libsqlite3-dev libwebp-dev libzip-dev && \
   rm -rf /var/lib/apt/lists/* && \
+  docker-php-ext-configure zip --with-libzip && \
   docker-php-ext-configure gd --with-png-dir --with-jpeg-dir --with-webp-dir && \
-  docker-php-ext-install gd mysqli opcache pdo_pgsql pdo_mysql zip
+  docker-php-ext-install exif gd mysqli opcache pdo_pgsql pdo_mysql zip
 
 RUN { \
     echo 'opcache.memory_consumption=128'; \
@@ -23,10 +24,10 @@ RUN { \
     echo 'memory_limit=128M'; \
   } > /usr/local/etc/php/conf.d/docker-oc-php.ini
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
-
-ENV COMPOSER_ALLOW_SUPERUSER=1
 
 
 

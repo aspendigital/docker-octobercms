@@ -122,7 +122,7 @@ function join {
 
 function update_buildtags {
 
-  defaultPhpVersion='php7.1'
+  defaultPhpVersion='php7.2'
   defaultVariant='apache'
 
   phpFolders=( php7.*/ )

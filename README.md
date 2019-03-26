@@ -18,32 +18,32 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 
 ## Supported Tags
 
-- `build.447-php7.2-apache`, `php7.2-apache`: [php7.2/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile)
+- `build.447-php7.3-apache`, `php7.3-apache`: [php7.3/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile)
+- `build.447-php7.3-fpm`, `php7.3-fpm`: [php7.3/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile)
+- `build.447-php7.2-apache`, `php7.2-apache`, `build.447`, `latest`: [php7.2/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile)
 - `build.447-php7.2-fpm`, `php7.2-fpm`: [php7.2/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/fpm/Dockerfile)
-- `build.447-php7.1-apache`, `php7.1-apache`, `build.447`, `latest`: [php7.1/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile)
+- `build.447-php7.1-apache`, `php7.1-apache`: [php7.1/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile)
 - `build.447-php7.1-fpm`, `php7.1-fpm`: [php7.1/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile)
-- `build.447-php7.0-apache`, `php7.0-apache`: [php7.0/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile)
-- `build.447-php7.0-fpm`, `php7.0-fpm`: [php7.0/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile)
 
 
 ### Edge Tags
 
-- `edge-build.448-php7.2-apache`, `edge-php7.2-apache`: [php7.2/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.edge)
+- `edge-build.448-php7.3-apache`, `edge-php7.3-apache`: [php7.3/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile.edge)
+- `edge-build.448-php7.3-fpm`, `edge-php7.3-fpm`: [php7.3/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile.edge)
+- `edge-build.448-php7.2-apache`, `edge-php7.2-apache`, `edge-build.448`, `edge`: [php7.2/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.edge)
 - `edge-build.448-php7.2-fpm`, `edge-php7.2-fpm`: [php7.2/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/fpm/Dockerfile.edge)
-- `edge-build.448-php7.1-apache`, `edge-php7.1-apache`, `edge-build.448`, `edge`: [php7.1/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.edge)
+- `edge-build.448-php7.1-apache`, `edge-php7.1-apache`: [php7.1/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.edge)
 - `edge-build.448-php7.1-fpm`, `edge-php7.1-fpm`: [php7.1/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.edge)
-- `edge-build.448-php7.0-apache`, `edge-php7.0-apache`: [php7.0/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.edge)
-- `edge-build.448-php7.0-fpm`, `edge-php7.0-fpm`: [php7.0/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.edge)
 
 
 ### Develop Tags
 
-- `develop-php7.2-apache`: [php7.2/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.develop)
+- `develop-php7.3-apache`: [php7.3/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile.develop)
+- `develop-php7.3-fpm`: [php7.3/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile.develop)
+- `develop-php7.2-apache`, `develop`: [php7.2/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.develop)
 - `develop-php7.2-fpm`: [php7.2/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/fpm/Dockerfile.develop)
-- `develop-php7.1-apache`, `develop`: [php7.1/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.develop)
+- `develop-php7.1-apache`: [php7.1/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/apache/Dockerfile.develop)
 - `develop-php7.1-fpm`: [php7.1/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.1/fpm/Dockerfile.develop)
-- `develop-php7.0-apache`: [php7.0/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/apache/Dockerfile.develop)
-- `develop-php7.0-fpm`: [php7.0/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.0/fpm/Dockerfile.develop)
 
 ### Legacy Tags
 

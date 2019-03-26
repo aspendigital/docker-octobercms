@@ -5,6 +5,10 @@ services:
 
 env:
   matrix:
+    - VARIANT=php7.3/apache
+      BRANCH=stable
+    - VARIANT=php7.3/fpm
+      BRANCH=stable
     - VARIANT=php7.2/apache
       BRANCH=stable
     - VARIANT=php7.2/fpm
@@ -12,12 +16,11 @@ env:
     - VARIANT=php7.1/apache
       BRANCH=stable
     - VARIANT=php7.1/fpm
-      BRANCH=stable
-    - VARIANT=php7.0/apache
-      BRANCH=stable
-    - VARIANT=php7.0/fpm
       BRANCH=stable
 
+    - VARIANT=php7.3/apache
+      BRANCH=edge
+    - VARIANT=php7.3/fpm
     - VARIANT=php7.2/apache
       BRANCH=edge
     - VARIANT=php7.2/fpm
@@ -25,12 +28,12 @@ env:
     - VARIANT=php7.1/apache
       BRANCH=edge
     - VARIANT=php7.1/fpm
-      BRANCH=edge
-    - VARIANT=php7.0/apache
-      BRANCH=edge
-    - VARIANT=php7.0/fpm
       BRANCH=edge
 
+    - VARIANT=php7.3/apache
+      BRANCH=develop
+    - VARIANT=php7.3/fpm
+      BRANCH=develop
     - VARIANT=php7.2/apache
       BRANCH=develop
     - VARIANT=php7.2/fpm
@@ -38,10 +41,6 @@ env:
     - VARIANT=php7.1/apache
       BRANCH=develop
     - VARIANT=php7.1/fpm
-      BRANCH=develop
-    - VARIANT=php7.0/apache
-      BRANCH=develop
-    - VARIANT=php7.0/fpm
       BRANCH=develop
 
 install:
@@ -91,7 +90,7 @@ after_success:
           docker build -t "$IMAGE:$BUILD" -f $DOCKERFILE .;
           docker push "$IMAGE:$BUILD";
         fi
-        
+
         if [ "$BRANCH" == "stable" ]; then
           docker build -t "$IMAGE:latest" -f $DOCKERFILE .;
           docker push "$IMAGE:latest";
