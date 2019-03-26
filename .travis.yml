@@ -21,6 +21,7 @@ env:
     - VARIANT=php7.3/apache
       BRANCH=edge
     - VARIANT=php7.3/fpm
+      BRANCH=edge
     - VARIANT=php7.2/apache
       BRANCH=edge
     - VARIANT=php7.2/fpm
