@@ -86,7 +86,7 @@ after_success:
         docker push "$IMAGE:$TAG_LONG";
       fi
 
-      if [ "$VARIANT" == "php7.1/apache" ]; then
+      if [ "$VARIANT" == "php7.2/apache" ]; then
         if [ ! -z "$BUILD" ]; then
           docker build -t "$IMAGE:$BUILD" -f $DOCKERFILE .;
           docker push "$IMAGE:$BUILD";
