@@ -279,6 +279,7 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | FWD_REMOTE_IP | false | `true` enables remote IP forwarding from proxy (Apache) |
 | GIT_CHECKOUT |  | Checkout branch, tag, commit within the container. Runs `git checkout $GIT_CHECKOUT` |
 | GIT_MERGE_PR |  | Pass GitHub pull request number to merge PR within the container for testing |
+| INIT_OCTOBER | false | `true` runs october up on container start |
 | INIT_PLUGINS | false | `true` runs composer install in plugins folders where no 'vendor' folder exists. `force` runs composer install regardless. Helpful when using git submodules for plugins. |
 | PHP_DISPLAY_ERRORS | off | Override value for `display_errors` in docker-oc-php.ini |
 | PHP_POST_MAX_SIZE | 32M | Override value for `post_max_size` in docker-oc-php.ini |
