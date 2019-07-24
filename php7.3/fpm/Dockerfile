@@ -39,9 +39,12 @@ ENV OCTOBERCMS_CORE_BUILD 455
 ENV OCTOBERCMS_CORE_HASH 530fb2559d6b264485c60ac3797fe8ac
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG --depth 1 . && \
+  echo "Update composer.json: Set explicit build references for october module dependencies" && \
+  sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
+  egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   composer clearcache && \
-  git status && git reset --hard HEAD && \
+  git status && git checkout modules/. && \
   rm -rf .git && \
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \

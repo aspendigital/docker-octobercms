@@ -49,7 +49,7 @@ ENV OCTOBERCMS_DEVELOP_COMMIT df81ea182b8d759a80cff146cd3982753e17553c
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
   composer install --no-interaction --prefer-dist --no-scripts && \
   composer clearcache && \
-  git status && git reset --hard HEAD && \
+  git status && git checkout modules/. && \
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
   echo 'config/docker' >> .git/info/exclude && \

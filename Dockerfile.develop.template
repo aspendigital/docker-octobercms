@@ -52,8 +52,8 @@ RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && 
   # download dependencies
   composer install --no-interaction --prefer-dist --no-scripts && \
   composer clearcache && \
-  # git reset to ensure October modules are in sync with the repo after composer install
-  git status && git reset --hard HEAD && \
+  # ensure modules are in sync with the repo after composer install
+  git status && git checkout modules/. && \
   # setup docker env
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
