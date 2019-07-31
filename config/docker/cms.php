@@ -8,7 +8,7 @@ return [
     'activeTheme' => env('CMS_ACTIVE_THEME', 'demo'),
     'edgeUpdates' => env('CMS_EDGE_UPDATES', false),
     'disableCoreUpdates' => env('CMS_DISABLE_CORE_UPDATES', true),
-	'backendUri' => env('CMS_BACKEND_URI', 'backend'),
+    'backendUri' => env('CMS_BACKEND_URI', 'backend'),
     'backendTimezone' => env('TZ', 'UTC'),
     'backendSkin' => env('CMS_BACKEND_SKIN', 'Backend\Skins\Standard'),
     'linkPolicy' => env('CMS_LINK_POLICY', 'detect'),
