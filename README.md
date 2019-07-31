@@ -303,6 +303,7 @@ List of variables used in `config/docker`
 | CMS_ACTIVE_THEME | demo |
 | CMS_EDGE_UPDATES | false  (true in `edge` images) |
 | CMS_DISABLE_CORE_UPDATES | true |
+| CMS_BACKEND_URI | backend |
 | CMS_BACKEND_SKIN | Backend\Skins\Standard |
 | CMS_LINK_POLICY | detect |
 | CMS_BACKEND_FORCE_SECURE | false |
