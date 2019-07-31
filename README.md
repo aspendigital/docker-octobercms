@@ -282,8 +282,8 @@ The following variables trigger actions run by the [entrypoint script](https://g
 | INIT_OCTOBER | false | `true` runs october up on container start |
 | INIT_PLUGINS | false | `true` runs composer install in plugins folders where no 'vendor' folder exists. `force` runs composer install regardless. Helpful when using git submodules for plugins. |
 | PHP_DISPLAY_ERRORS | off | Override value for `display_errors` in docker-oc-php.ini |
-| PHP_POST_MAX_SIZE | 32M | Override value for `post_max_size` in docker-oc-php.ini |
 | PHP_MEMORY_LIMIT | 128M | Override value for `memory_limit` in docker-oc-php.ini |
+| PHP_POST_MAX_SIZE | 32M | Override value for `post_max_size` in docker-oc-php.ini |
 | PHP_UPLOAD_MAX_FILESIZE | 32M | Override value for `upload_max_filesize` in docker-oc-php.ini |
 | UNIT_TEST |  | `true` runs all October CMS unit tests. Pass test filename to run a specific test. |
 | VERSION_INFO | false | `true` outputs container current commit, php version, and dependency info on start |
@@ -297,34 +297,34 @@ List of variables used in `config/docker`
 | Variable | Default |
 | -------- | ------- |
 | APP_DEBUG | false |
-| APP_URL | http://localhost |
 | APP_KEY | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
+| APP_URL | http://localhost |
 | CACHE_STORE | file |
 | CMS_ACTIVE_THEME | demo |
-| CMS_EDGE_UPDATES | false  (true in `edge` images) |
-| CMS_DISABLE_CORE_UPDATES | true |
-| CMS_BACKEND_URI | backend |
-| CMS_BACKEND_SKIN | Backend\Skins\Standard |
-| CMS_LINK_POLICY | detect |
 | CMS_BACKEND_FORCE_SECURE | false |
-| DB_TYPE | sqlite |
-| DB_SQLITE_PATH | storage/database.sqlite |
-| DB_HOST | mysql* |
-| DB_PORT | - |
+| CMS_BACKEND_SKIN | Backend\Skins\Standard |
+| CMS_BACKEND_URI | backend |
+| CMS_DISABLE_CORE_UPDATES | true |
+| CMS_EDGE_UPDATES | false  (true in `edge` images) |
+| CMS_LINK_POLICY | detect |
 | DB_DATABASE | - |
-| DB_USERNAME | - |
+| DB_HOST | mysql* |
 | DB_PASSWORD | - |
+| DB_PORT | - |
 | DB_REDIS_HOST | redis* |
 | DB_REDIS_PASSWORD | null |
 | DB_REDIS_PORT | 6379 |
+| DB_SQLITE_PATH | storage/database.sqlite |
+| DB_TYPE | sqlite |
+| DB_USERNAME | - |
 | MAIL_DRIVER | log |
-| MAIL_SMTP_HOST | - |
-| MAIL_SMTP_PORT | 587 |
 | MAIL_FROM_ADDRESS | no-reply@domain.tld |
 | MAIL_FROM_NAME | October CMS |
 | MAIL_SMTP_ENCRYPTION | tls |
-| MAIL_SMTP_USERNAME | - |
+| MAIL_SMTP_HOST | - |
 | MAIL_SMTP_PASSWORD | - |
+| MAIL_SMTP_PORT | 587 |
+| MAIL_SMTP_USERNAME | - |
 | QUEUE_DRIVER | sync |
 | SESSION_DRIVER | file |
 | TZ\** | UTC |
