@@ -33,10 +33,10 @@ RUN a2enmod rewrite
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG v1.0.455
-ENV OCTOBERCMS_CHECKSUM 43ebefa9ff4c0bd2fe55e89c08f29b25ef353b45
-ENV OCTOBERCMS_CORE_BUILD 455
-ENV OCTOBERCMS_CORE_HASH 530fb2559d6b264485c60ac3797fe8ac
+ENV OCTOBERCMS_TAG v1.0.458
+ENV OCTOBERCMS_CHECKSUM c6d598f9db9d8fdc9007ab40f06dcd8b60e1fe2d
+ENV OCTOBERCMS_CORE_BUILD 458
+ENV OCTOBERCMS_CORE_HASH 7ecf00bd75e60458191bfcdc43dc14e5
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG --depth 1 . && \
   echo "Update composer.json: Set explicit build references for october module dependencies" && \
