@@ -33,10 +33,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG v1.0.458
-ENV OCTOBERCMS_CHECKSUM c6d598f9db9d8fdc9007ab40f06dcd8b60e1fe2d
-ENV OCTOBERCMS_CORE_BUILD 458
-ENV OCTOBERCMS_CORE_HASH 7ecf00bd75e60458191bfcdc43dc14e5
+ENV OCTOBERCMS_TAG v1.0.461
+ENV OCTOBERCMS_CHECKSUM 2b43ff275f5638d753d916c71f03d77842ae776a
+ENV OCTOBERCMS_CORE_BUILD 461
+ENV OCTOBERCMS_CORE_HASH 3d83f8c11cbf408e037a37b352ff388c
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG --depth 1 . && \
   echo "Update composer.json: Set explicit build references for october module dependencies" && \
