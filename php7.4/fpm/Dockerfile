@@ -1,13 +1,12 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%
+FROM php:7.4-fpm
 
 RUN apt-get update && apt-get install -y cron git-core jq unzip vim zip \
   libjpeg-dev libpng-dev libpq-dev libsqlite3-dev libwebp-dev libzip-dev && \
   rm -rf /var/lib/apt/lists/* && \
-  %%PHP_ZIP_CONFIG%% && \
-  %%PHP_GD_CONFIG%% && \
+  docker-php-ext-configure zip --with-zip && \
+  docker-php-ext-configure gd --with-jpeg --with-webp && \
   docker-php-ext-install exif gd mysqli opcache pdo_pgsql pdo_mysql zip
 
-# Recommended opcache settings - https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
     echo 'opcache.memory_consumption=128'; \
     echo 'opcache.interned_strings_buffer=8'; \
@@ -30,42 +29,32 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
 
-%%VARIANT_EXTRAS%%
+
 
 COPY config/docker /usr/src/octobercms-config-docker
 
-ENV OCTOBERCMS_TAG %%OCTOBERCMS_TAG%%
-ENV OCTOBERCMS_CHECKSUM %%OCTOBERCMS_CHECKSUM%%
-ENV OCTOBERCMS_CORE_BUILD %%OCTOBERCMS_CORE_BUILD%%
-ENV OCTOBERCMS_CORE_HASH %%OCTOBERCMS_CORE_HASH%%
+ENV OCTOBERCMS_TAG v1.0.462
+ENV OCTOBERCMS_CHECKSUM dc054d2800762edc6d95424f3fb8ac2cc0e19420
+ENV OCTOBERCMS_CORE_BUILD 462
+ENV OCTOBERCMS_CORE_HASH 455c8d34ba2d80b1b408144879a786c7
 
-# Consolidated October CMS setup
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG --depth 1 . && \
-  # match build dependencies
   echo "Update composer.json: Set explicit build references for october module dependencies" && \
   sed -i.orig "s/\(\"october\/\([rain|system|backend|cms]*\)\": \"\(~1.0\)\"\)/\"october\/\2\": \"<=${OCTOBERCMS_TAG#v}\"/g" composer.json && \
   egrep -o "['\"]october\/[rain|system|backend|cms]*['\"]\s*:\s*['\"](.+?)['\"]" composer.json && \
-  # download dependencies
   composer install --no-interaction --prefer-dist --no-scripts && \
   composer clearcache && \
-  # ensure modules are in sync with the repo after composer install
   git status && git checkout modules/. && \
-  # remove git repo
   rm -rf .git && \
-  # setup docker env
   echo 'APP_ENV=docker' > .env && \
   mv /usr/src/octobercms-config-docker config/docker && \
-  # setup database
   touch storage/database.sqlite && \
   chmod 666 storage/database.sqlite && \
   php artisan october:up && \
-  # add October Drivers
   php artisan plugin:install october.drivers && \
-  # permissions
   chown -R www-data:www-data /var/www/html && \
   find . -type d \( -path './plugins' -or  -path './storage' -or  -path './themes' -or  -path './plugins/*' -or  -path './storage/*' -or  -path './themes/*' \) -exec chmod g+ws {} \;
 
-# Set October build params
 RUN php -r "use System\\Models\\Parameter; \
     require __DIR__.'/bootstrap/autoload.php'; \
     \$app = require_once __DIR__.'/bootstrap/app.php'; \
@@ -73,11 +62,9 @@ RUN php -r "use System\\Models\\Parameter; \
     Parameter::set(['system::core.build'=>getenv('OCTOBERCMS_CORE_BUILD'), 'system::core.hash'=>getenv('OCTOBERCMS_CORE_HASH')]); \
     echo \"October CMS \\n Build: \",Parameter::get('system::core.build'), \"\\n Hash: \", Parameter::get('system::core.hash'), \"\\n\";"
 
-# Initialize crontab for the October CMS scheduler
 RUN echo "* * * * * /usr/local/bin/php /var/www/html/artisan schedule:run > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/october-cron && \
   crontab /etc/cron.d/october-cron
 
-# Add helpers
 RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
   echo 'exec php artisan tinker' > /usr/local/bin/tinker && \
   echo '[ $# -eq 0 ] && exec php artisan october || exec php artisan october:"$@"' > /usr/local/bin/october && \
@@ -87,4 +74,4 @@ RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
 COPY docker-oc-entrypoint /usr/local/bin/
 
 ENTRYPOINT ["docker-oc-entrypoint"]
-CMD ["%%CMD%%"]
+CMD ["php-fpm"]

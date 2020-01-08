@@ -1,0 +1,143 @@
+#!/bin/bash
+set -e
+
+# PHP config
+if [ ! -z "$PHP_DISPLAY_ERRORS" ]; then
+  echo "php.ini set display_errors=$PHP_DISPLAY_ERRORS"
+  sed -i "/display_errors=*/c\display_errors=$PHP_DISPLAY_ERRORS" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_POST_MAX_SIZE" ]; then
+  echo "php.ini set post_max_size=$PHP_POST_MAX_SIZE"
+  sed -i "/post_max_size=*/c\post_max_size=$PHP_POST_MAX_SIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_MEMORY_LIMIT" ]; then
+  echo "php.ini set memory_limit=$PHP_MEMORY_LIMIT"
+  sed -i "/memory_limit=*/c\memory_limit=$PHP_MEMORY_LIMIT" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
+  echo "php.ini set upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE"
+  sed -i "/upload_max_filesize=*/c\upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
+  echo "php.ini set upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE"
+  sed -i "/upload_max_filesize=*/c\upload_max_filesize=$PHP_UPLOAD_MAX_FILESIZE" /usr/local/etc/php/conf.d/docker-oc-php.ini
+fi
+
+# Xdebug config
+if [ "${XDEBUG_ENABLE,,}" == "true" ]; then
+  if [ ! -f "/usr/local/etc/php/conf.d/docker-xdebug-php.ini" ]; then
+    echo "Xdebug config not found. Try the develop image" && exit 1;
+  fi
+  sed -i "/zend_extension/s/^#//" /usr/local/etc/php/conf.d/docker-xdebug-php.ini
+  echo 'Xdebug enabled'
+fi
+
+if [ ! -z "$XDEBUG_REMOTE_HOST" ]; then
+  if [ ! -f "/usr/local/etc/php/conf.d/docker-xdebug-php.ini" ]; then
+    echo "Xdebug config not found. Try the develop image" && exit 1;
+  fi
+  echo "set xdebug.remote_host=$XDEBUG_REMOTE_HOST"
+  sed -i "/xdebug.remote_host=*/c\xdebug.remote_host=$XDEBUG_REMOTE_HOST" /usr/local/etc/php/conf.d/docker-xdebug-php.ini
+fi
+
+# Display current commit, php version, and dependency info
+if [ "${VERSION_INFO,,}" == "true" ]; then
+  echo -e "October CMS - $OCTOBERCMS_TAG\n---"
+  if [ -d ".git" ]; then
+    git log --pretty=format:"%s%n%C(yellow)%H%Creset" -1
+    echo -e "\n---"
+  fi
+  php --version | grep PHP -m 1
+  composer info | grep october | awk '{print $1 ": " $2}'
+  echo "---"
+fi
+
+# Checkout branch, tag, commit within the container
+if [ ! -z "$GIT_CHECKOUT" ]; then
+  if [ ! -d ".git" ]; then
+    error "Git repo is not found. Try the develop image" && exit 1;
+  fi
+  echo "Checking out $GIT_CHECKOUT...";
+  git checkout $GIT_CHECKOUT
+  git log --pretty=format:"%s%n%C(yellow)%H%Creset" -1
+  echo -e "\n---"
+fi
+
+# Pass GitHub pull request number to merge PR within the container for testing
+if [ ! -z "$GIT_MERGE_PR" ]; then
+  if [ ! -d ".git" ]; then
+    error "Git repo is not found. Try the develop image" && exit 1;
+  fi
+
+  echo "Test GitHub pull request #$GIT_MERGE_PR";
+  curl -fsS --connect-timeout 15 \
+    https://api.github.com/repos/octobercms/october/pulls/$GIT_MERGE_PR \
+    | jq -r '.title, .html_url';
+  echo "---"
+
+  echo "Fetch..."
+  git fetch origin pull/$GIT_MERGE_PR/head:pr-$GIT_MERGE_PR
+
+  echo "Merge..."
+  git merge --no-commit pr-$GIT_MERGE_PR || { error "Check if PR $GIT_MERGE_PR exists." && exit 1; }
+
+  echo "Diff..."
+  git diff --cached --stat
+  echo "---"
+fi
+
+# Enable remote IP forwarding for proxy support
+if [[ "$1" == apache2* ]] && [ "${FWD_REMOTE_IP,,}" == "true" ]; then
+  a2enmod remoteip -q
+  echo 'RemoteIPHeader X-Forwarded-For' > $APACHE_CONFDIR/conf-available/docker-oc-apache.conf
+  a2enconf docker-oc-apache -q
+fi
+
+# Start a cron process within the container
+if [ "${ENABLE_CRON,,}" == "true" ]; then
+  php artisan schedule:run # required to prime db connection
+  cron
+  echo 'Cron enabled.'
+elif [ "$1" == cron ]; then
+  php artisan schedule:run
+fi
+
+# Initialize vendor plugins where vendor folder isn't detected
+if [ "${INIT_PLUGINS,,}" == "true" ] || [ "${INIT_PLUGINS,,}" == "force" ]; then
+  echo 'Initializing plugin vendor folders...'
+  for i in $(echo plugins/*/*); do
+    if [ -f "$i/composer.json" ]; then
+      if [ "${INIT_PLUGINS,,}" == "force" ] || [ ! -d "$i/vendor" ]; then
+        echo " - $i"
+        composer --working-dir="$i" --no-interaction --quiet install
+        chown -R www-data:www-data $i
+      fi
+    fi
+  done
+fi
+
+# Run october up on container start
+if [ "${INIT_OCTOBER,,}" == "true" ]; then
+  echo 'Initializing October CMS...'
+  php artisan october:up
+fi
+
+# Runs all October CMS unit tests. Pass test filename to run a specific test.
+if [ ! -z "$UNIT_TEST" ]; then
+  echo -e "October CMS Unit Test..."
+  if [ "${UNIT_TEST,,}" == "true" ]; then
+    vendor/bin/phpunit
+  elif [ ! -f "$UNIT_TEST" ]; then
+    echo "File '$UNIT_TEST' does not exist."
+  elif [ -f "$UNIT_TEST" ]; then
+    echo "Running single test: $UNIT_TEST"
+    vendor/bin/phpunit $UNIT_TEST
+  fi
+  echo "---"
+fi
+
+exec "$@"

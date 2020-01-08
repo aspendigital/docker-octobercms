@@ -18,6 +18,8 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 
 ## Supported Tags
 
+- `build.462-php7.4-apache`, `php7.4-apache`: [php7.4/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/apache/Dockerfile)
+- `build.462-php7.4-fpm`, `php7.4-fpm`: [php7.4/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/fpm/Dockerfile)
 - `build.462-php7.3-apache`, `php7.3-apache`: [php7.3/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile)
 - `build.462-php7.3-fpm`, `php7.3-fpm`: [php7.3/fpm/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile)
 - `build.462-php7.2-apache`, `php7.2-apache`, `build.462`, `latest`: [php7.2/apache/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile)
@@ -28,6 +30,8 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 
 ### Edge Tags
 
+- `edge-build.464-php7.4-apache`, `edge-php7.4-apache`: [php7.4/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/apache/Dockerfile.edge)
+- `edge-build.464-php7.4-fpm`, `edge-php7.4-fpm`: [php7.4/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/fpm/Dockerfile.edge)
 - `edge-build.464-php7.3-apache`, `edge-php7.3-apache`: [php7.3/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile.edge)
 - `edge-build.464-php7.3-fpm`, `edge-php7.3-fpm`: [php7.3/fpm/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile.edge)
 - `edge-build.464-php7.2-apache`, `edge-php7.2-apache`, `edge-build.464`, `edge`: [php7.2/apache/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.edge)
@@ -38,6 +42,8 @@ Based on [official docker PHP images](https://hub.docker.com/_/php), images incl
 
 ### Develop Tags
 
+- `develop-php7.4-apache`: [php7.4/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/apache/Dockerfile.develop)
+- `develop-php7.4-fpm`: [php7.4/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.4/fpm/Dockerfile.develop)
 - `develop-php7.3-apache`: [php7.3/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/apache/Dockerfile.develop)
 - `develop-php7.3-fpm`: [php7.3/fpm/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.3/fpm/Dockerfile.develop)
 - `develop-php7.2-apache`, `develop`: [php7.2/apache/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/php7.2/apache/Dockerfile.develop)

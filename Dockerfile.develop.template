@@ -3,8 +3,8 @@ FROM php:%%PHP_VERSION%%-%%VARIANT%%
 RUN apt-get update && apt-get install -y cron git-core jq unzip vim zip \
   libjpeg-dev libpng-dev libpq-dev libsqlite3-dev libwebp-dev libzip-dev && \
   rm -rf /var/lib/apt/lists/* && \
-  docker-php-ext-configure zip --with-libzip && \
-  docker-php-ext-configure gd --with-png-dir --with-jpeg-dir --with-webp-dir && \
+  %%PHP_ZIP_CONFIG%% && \
+  %%PHP_GD_CONFIG%% && \
   docker-php-ext-install exif gd mysqli opcache pdo_pgsql pdo_mysql zip
 
 # Recommended opcache settings - https://secure.php.net/manual/en/opcache.installation.php

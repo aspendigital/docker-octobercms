@@ -66,6 +66,14 @@ function update_dockerfiles {
   	phpVersionDir="$phpVersion"
   	phpVersion="${phpVersion#php}"
 
+    if [ "$phpVersion" == "7.4" ]; then
+      gd_config="docker-php-ext-configure gd --with-jpeg --with-webp"
+      zip_config="docker-php-ext-configure zip --with-zip"
+    else
+      gd_config="docker-php-ext-configure gd --with-png-dir --with-jpeg-dir --with-webp-dir"
+      zip_config="docker-php-ext-configure zip --with-libzip"
+    fi
+
   	for variant in apache fpm; do
   		dir="$phpVersionDir/$variant"
   		mkdir -p "$dir"
@@ -87,6 +95,8 @@ function update_dockerfiles {
 				-e 's!%%OCTOBERCMS_DEVELOP_COMMIT%%!'"$GITHUB_LATEST_COMMIT"'!g' \
 				-e 's!%%OCTOBERCMS_DEVELOP_CHECKSUM%%!'"$GITHUB_LATEST_CHECKSUM"'!g' \
 				-e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
+				-e 's!%%PHP_GD_CONFIG%%!'"$gd_config"'!g' \
+				-e 's!%%PHP_ZIP_CONFIG%%!'"$zip_config"'!g' \
 				-e 's!%%VARIANT%%!'"$variant"'!g' \
 				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
 				-e 's!%%CMD%%!'"$cmd"'!g' \
