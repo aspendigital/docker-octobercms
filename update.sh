@@ -63,8 +63,8 @@ function update_dockerfiles {
   phpVersions=( "${phpVersions[@]%/}" )
 
   for phpVersion in "${phpVersions[@]}"; do
-  	phpVersionDir="$phpVersion"
-  	phpVersion="${phpVersion#php}"
+    phpVersionDir="$phpVersion"
+    phpVersion="${phpVersion#php}"
 
     if [ "$phpVersion" == "7.4" ]; then
       gd_config="docker-php-ext-configure gd --with-jpeg --with-webp"
@@ -74,35 +74,35 @@ function update_dockerfiles {
       zip_config="docker-php-ext-configure zip --with-libzip"
     fi
 
-  	for variant in apache fpm; do
-  		dir="$phpVersionDir/$variant"
-  		mkdir -p "$dir"
+    for variant in apache fpm; do
+      dir="$phpVersionDir/$variant"
+      mkdir -p "$dir"
 
-  		if [ "$variant" == "apache" ]; then
-  			extras="RUN a2enmod rewrite"
-  			cmd="apache2-foreground"
-  		elif [ "$variant" == "fpm" ]; then
-  			extras=""
-  			cmd="php-fpm"
-  		fi
+      if [ "$variant" == "apache" ]; then
+        extras="RUN a2enmod rewrite"
+        cmd="apache2-foreground"
+      elif [ "$variant" == "fpm" ]; then
+        extras=""
+        cmd="php-fpm"
+      fi
 
-			sed \
-				-e '/^#.*$/d' -e '/^  #.*$/d' \
-				-e 's!%%OCTOBERCMS_TAG%%!'"$current_tag"'!g' \
-				-e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
-				-e 's!%%OCTOBERCMS_CORE_HASH%%!'"$hash"'!g' \
-				-e 's!%%OCTOBERCMS_CORE_BUILD%%!'"$build"'!g' \
-				-e 's!%%OCTOBERCMS_DEVELOP_COMMIT%%!'"$GITHUB_LATEST_COMMIT"'!g' \
-				-e 's!%%OCTOBERCMS_DEVELOP_CHECKSUM%%!'"$GITHUB_LATEST_CHECKSUM"'!g' \
-				-e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
-				-e 's!%%PHP_GD_CONFIG%%!'"$gd_config"'!g' \
-				-e 's!%%PHP_ZIP_CONFIG%%!'"$zip_config"'!g' \
-				-e 's!%%VARIANT%%!'"$variant"'!g' \
-				-e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
-				-e 's!%%CMD%%!'"$cmd"'!g' \
-				Dockerfile$ext.template > "$dir/Dockerfile$ext"
+      sed \
+        -e '/^#.*$/d' -e '/^  #.*$/d' \
+        -e 's!%%OCTOBERCMS_TAG%%!'"$current_tag"'!g' \
+        -e 's!%%OCTOBERCMS_CHECKSUM%%!'"$checksum"'!g' \
+        -e 's!%%OCTOBERCMS_CORE_HASH%%!'"$hash"'!g' \
+        -e 's!%%OCTOBERCMS_CORE_BUILD%%!'"$build"'!g' \
+        -e 's!%%OCTOBERCMS_DEVELOP_COMMIT%%!'"$GITHUB_LATEST_COMMIT"'!g' \
+        -e 's!%%OCTOBERCMS_DEVELOP_CHECKSUM%%!'"$GITHUB_LATEST_CHECKSUM"'!g' \
+        -e 's!%%PHP_VERSION%%!'"$phpVersion"'!g' \
+        -e 's!%%PHP_GD_CONFIG%%!'"$gd_config"'!g' \
+        -e 's!%%PHP_ZIP_CONFIG%%!'"$zip_config"'!g' \
+        -e 's!%%VARIANT%%!'"$variant"'!g' \
+        -e 's!%%VARIANT_EXTRAS%%!'"$extras"'!g' \
+        -e 's!%%CMD%%!'"$cmd"'!g' \
+        Dockerfile$ext.template > "$dir/Dockerfile$ext"
 
-  	done
+    done
   done
 }
 
@@ -125,9 +125,9 @@ function copy_entrypoint_config {
 }
 
 function join {
-	local sep="$1"; shift
-	local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
-	echo "${out#$sep}"
+  local sep="$1"; shift
+  local out; printf -v out "${sep//%/%%}\`%s\`" "$@"
+  echo "${out#$sep}"
 }
 
 function update_buildtags {
@@ -139,32 +139,32 @@ function update_buildtags {
   phpVersions=()
   # process in descending order
   for (( idx=${#phpFolders[@]}-1 ; idx>=0 ; idx-- )) ; do
-  	phpVersions+=( "${phpFolders[idx]%/}" )
+    phpVersions+=( "${phpFolders[idx]%/}" )
   done
 
   for phpVersion in "${phpVersions[@]}"; do
-  	for variant in apache fpm; do
-  		dir="$phpVersion/$variant"
-  		[ -f "$dir/Dockerfile" ] || continue
+    for variant in apache fpm; do
+      dir="$phpVersion/$variant"
+      [ -f "$dir/Dockerfile" ] || continue
 
-  		fullVersion="$(cat "$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_CORE_BUILD" { print $3; exit }')"
-  		fullVersion=build.$fullVersion
+      fullVersion="$(cat "$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "OCTOBERCMS_CORE_BUILD" { print $3; exit }')"
+      fullVersion=build.$fullVersion
 
       versionAliases=()
-  		versionAliases+=( $fullVersion latest )
+      versionAliases+=( $fullVersion latest )
 
       phpVersionVariantAliases=( "${versionAliases[@]/%/-$phpVersion-$variant}" )
-  		phpVersionVariantAliases=( "${phpVersionVariantAliases[@]//latest-/}" )
+      phpVersionVariantAliases=( "${phpVersionVariantAliases[@]//latest-/}" )
 
-  		fullAliases=( "${phpVersionVariantAliases[@]}" )
+      fullAliases=( "${phpVersionVariantAliases[@]}" )
 
-  		if [ "$phpVersion" = "$defaultPhpVersion" ]; then
-  			if [ "$variant" = "$defaultVariant" ]; then
-  				fullAliases+=( "${versionAliases[@]}" )
-  			fi
-  		fi
+      if [ "$phpVersion" = "$defaultPhpVersion" ]; then
+        if [ "$variant" = "$defaultVariant" ]; then
+          fullAliases+=( "${versionAliases[@]}" )
+        fi
+      fi
 
-  		tagsMarkdown+="- $(join ', ' "${fullAliases[@]}"): [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
+      tagsMarkdown+="- $(join ', ' "${fullAliases[@]}"): [$dir/Dockerfile](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile)\n"
 
       # Build edge tags
       [ -f "$dir/Dockerfile.edge" ] || continue
@@ -180,11 +180,11 @@ function update_buildtags {
       fullEdgeAliases=( "${phpEdgeVersionVariantAliases[@]}" )
 
       if [ "$phpVersion" = "$defaultPhpVersion" ]; then
-  			if [ "$variant" = "$defaultVariant" ]; then
-  				fullEdgeAliases+=( "${edgeAliases[@]}" )
-  			fi
-  		fi
-  		edgeTagsMarkdown+="- $(join ', ' "${fullEdgeAliases[@]}"): [$dir/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.edge)\n"
+        if [ "$variant" = "$defaultVariant" ]; then
+          fullEdgeAliases+=( "${edgeAliases[@]}" )
+        fi
+      fi
+      edgeTagsMarkdown+="- $(join ', ' "${fullEdgeAliases[@]}"): [$dir/Dockerfile.edge](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.edge)\n"
 
       # Build develop tags
       [ -f "$dir/Dockerfile.develop" ] || continue
@@ -197,33 +197,33 @@ function update_buildtags {
       fullDevelopAliases=( "${phpDevelopVersionVariantAliases[@]}" )
 
       if [ "$phpVersion" = "$defaultPhpVersion" ]; then
-  			if [ "$variant" = "$defaultVariant" ]; then
-  				fullDevelopAliases+=( "${developAliases[@]}" )
-  			fi
-  		fi
-  		developTagsMarkdown+="- $(join ', ' "${fullDevelopAliases[@]}"): [$dir/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.develop)\n"
+        if [ "$variant" = "$defaultVariant" ]; then
+          fullDevelopAliases+=( "${developAliases[@]}" )
+        fi
+      fi
+      developTagsMarkdown+="- $(join ', ' "${fullDevelopAliases[@]}"): [$dir/Dockerfile.develop](https://github.com/aspendigital/docker-octobercms/blob/master/$dir/Dockerfile.develop)\n"
 
-  	done
+    done
   done
 
-	# Recreate README.md
-	sed '/## Supported Tags/q' README.md \
+  # Recreate README.md
+  sed '/## Supported Tags/q' README.md \
    | sed -e "s/CMS Build [0-9]*/CMS Build $STABLE_BUILD/" \
    | sed -e "s/CMS%20Build-[0-9]*/CMS%20Build-$STABLE_BUILD/" \
    | sed -e "s/Edge Build [0-9]*/Edge Build $EDGE_BUILD/" \
    | sed -e "s/Edge%20Build-[0-9]*/Edge%20Build-$EDGE_BUILD/" > README_TMP.md
-	echo -e "\n${tagsMarkdown[*]}" >> README_TMP.md
+  echo -e "\n${tagsMarkdown[*]}" >> README_TMP.md
   echo -e "\n### Edge Tags" >> README_TMP.md
   echo -e "\n${edgeTagsMarkdown[*]}" >> README_TMP.md
   echo -e "\n### Develop Tags" >> README_TMP.md
   echo -e "\n${developTagsMarkdown[*]}" >> README_TMP.md
-	sed -n -e '/Legacy Tags/,$p' README.md >> README_TMP.md
-	mv README_TMP.md README.md
+  sed -n -e '/Legacy Tags/,$p' README.md >> README_TMP.md
+  mv README_TMP.md README.md
 }
 
 function update_repo {
   # commit changes to repository
-	echo " - Committing changes to repo..."
+  echo " - Committing changes to repo..."
   git add php*/*/Dockerfile* README.md version
 
   if [ "$STABLE_UPDATE" -eq 1 ] && [ "$EDGE_UPDATE" -eq 1 ]; then
@@ -244,8 +244,9 @@ function update_repo {
 
 while true; do
   case "$1" in
-    --force)  FORCE=1; shift ;;
-    --push)   PUSH=1; shift ;;
+    --force)   FORCE=1; shift ;;
+    --push)    PUSH=1; shift ;;
+    --rewrite) REWRITE_ONLY=1; shift ;;
     *)
       break
   esac
@@ -259,7 +260,7 @@ echo "Automat: `date`"
 [ "$PUSH" ] && echo ' - Commit changes'
 # Load cached version if not forced
 [ "$FORCE" ] && echo ' - Force update' || source version
-
+[ "$REWRITE_ONLY" ] && echo ' - Rewriting Dockerfiles and README' 
 
 echo " - Querying October CMS API for updates..."
 STABLE_RESPONSE=$(check_october)
@@ -340,7 +341,7 @@ if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ] || [ "$DEVELOP_UPDATE"
   if [ "$SLACK_WEBHOOK_URL" ]; then
     echo -n " - Posting update to Slack..."
     curl -X POST -fsS --connect-timeout 15 --data-urlencode "payload={
-	    'text': 'October CMS Build $STABLE_BUILD | Edge Build $EDGE_BUILD | Develop $GITHUB_LATEST_COMMIT',
+      'text': 'October CMS Build $STABLE_BUILD | Edge Build $EDGE_BUILD | Develop $GITHUB_LATEST_COMMIT',
     }" $SLACK_WEBHOOK_URL
     echo -e ""
   fi
