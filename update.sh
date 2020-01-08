@@ -260,7 +260,7 @@ echo "Automat: `date`"
 [ "$PUSH" ] && echo ' - Commit changes'
 # Load cached version if not forced
 [ "$FORCE" ] && echo ' - Force update' || source version
-[ "$REWRITE_ONLY" ] && echo ' - Rewriting Dockerfiles and README' 
+[ "$REWRITE_ONLY" ] && echo ' - Rewriting Dockerfiles and README'
 
 echo " - Querying October CMS API for updates..."
 STABLE_RESPONSE=$(check_october)
@@ -324,7 +324,7 @@ fi
 echo " - Copying entrypoint and config..."
 copy_entrypoint_config
 
-if [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ] || [ "$DEVELOP_UPDATE" -eq 1 ]; then
+if [ "$REWRITE_ONLY" -eq 1 ] || [ "$STABLE_UPDATE" -eq 1 ] || [ "$EDGE_UPDATE" -eq 1 ] || [ "$DEVELOP_UPDATE" -eq 1 ]; then
   echo " - Setting build values..."
   echo "    OCTOBERCMS_BUILD: $STABLE_BUILD" && echo "OCTOBERCMS_BUILD=$STABLE_BUILD" > version
   echo "    OCTOBERCMS_CORE_HASH: $STABLE_CORE_HASH" && echo "OCTOBERCMS_CORE_HASH=$STABLE_CORE_HASH" >> version
