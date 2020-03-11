@@ -310,6 +310,7 @@ List of variables used in `config/docker`
 | CMS_BACKEND_FORCE_SECURE | false |
 | CMS_BACKEND_SKIN | Backend\Skins\Standard |
 | CMS_BACKEND_URI | backend |
+| CMS_DATABASE_TEMPLATES | false |
 | CMS_DISABLE_CORE_UPDATES | true |
 | CMS_EDGE_UPDATES | false  (true in `edge` images) |
 | CMS_LINK_POLICY | detect |
