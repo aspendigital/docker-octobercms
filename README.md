@@ -305,6 +305,7 @@ List of variables used in `config/docker`
 | APP_DEBUG | false |
 | APP_KEY | 0123456789ABCDEFGHIJKLMNOPQRSTUV |
 | APP_URL | http://localhost |
+| APP_LOCALE | en |
 | CACHE_STORE | file |
 | CMS_ACTIVE_THEME | demo |
 | CMS_BACKEND_FORCE_SECURE | false |
