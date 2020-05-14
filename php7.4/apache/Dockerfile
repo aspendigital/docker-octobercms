@@ -24,7 +24,13 @@ RUN { \
     echo 'memory_limit=128M'; \
   } > /usr/local/etc/php/conf.d/docker-oc-php.ini
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+ARG PUID=1000
+ENV PUID ${PUID}
+ARG PGID=1000
+ENV PGID ${PGID}
+
+RUN groupmod -o -g ${PGID} www-data && \
+    usermod -o -u ${PUID} -g www-data www-data
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
@@ -72,6 +78,8 @@ RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
   chmod +x /usr/local/bin/artisan /usr/local/bin/tinker /usr/local/bin/october
 
 COPY docker-oc-entrypoint /usr/local/bin/
+
+
 
 ENTRYPOINT ["docker-oc-entrypoint"]
 CMD ["apache2-foreground"]
