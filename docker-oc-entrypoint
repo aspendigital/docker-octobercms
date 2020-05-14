@@ -141,6 +141,6 @@ if [ ! -z "$UNIT_TEST" ]; then
 fi
 
 # Put env variables to /etc/environtment for cron
-printenv | grep -v "no_proxy" >> /etc/environment
+printenv >> /etc/environment
 
 exec "$@"
