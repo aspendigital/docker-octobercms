@@ -32,6 +32,8 @@ ENV PGID ${PGID}
 RUN groupmod -o -g ${PGID} www-data && \
     usermod -o -u ${PUID} -g www-data www-data
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   /usr/local/bin/composer global require hirak/prestissimo
 
