@@ -79,7 +79,5 @@ RUN echo 'exec php artisan "$@"' > /usr/local/bin/artisan && \
 
 COPY docker-oc-entrypoint /usr/local/bin/
 
-
-
 ENTRYPOINT ["docker-oc-entrypoint"]
 CMD ["apache2-foreground"]
