@@ -43,8 +43,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY config/docker /usr/src/octobercms-config-docker
 
 ENV OCTOBERCMS_TAG develop
-ENV OCTOBERCMS_DEVELOP_CHECKSUM 49f6a3b7cfc52c99e94af4c8236fdc477450a3d9
-ENV OCTOBERCMS_DEVELOP_COMMIT 789de0217d0c06c95097261b59aee8902bf19ed7
+ENV OCTOBERCMS_DEVELOP_CHECKSUM b25981db216db14f3755c1bda8a99180fa6842b6
+ENV OCTOBERCMS_DEVELOP_COMMIT b6ee7d9bcabc48cb073187f9abdea365b06fe2ad
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
   composer install --no-interaction --prefer-dist --no-scripts && \
