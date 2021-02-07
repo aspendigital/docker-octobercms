@@ -83,6 +83,7 @@ before_script:
   - cd "$VARIANT"
 
 script:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
   - docker build -t "$IMAGE:$TAG" -f $DOCKERFILE .
   - ~/official-images/test/run.sh "$IMAGE:$TAG"
   - docker run --rm "$IMAGE:$TAG" php --version
@@ -91,7 +92,6 @@ script:
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
       docker push "$IMAGE:$TAG";
 
       if [ ! -z "$TAG_LONG" ]; then
