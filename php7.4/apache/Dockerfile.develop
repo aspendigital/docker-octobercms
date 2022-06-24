@@ -43,8 +43,8 @@ RUN a2enmod rewrite
 COPY config/docker /usr/src/octobercms-config-docker
 
 ENV OCTOBERCMS_TAG develop
-ENV OCTOBERCMS_DEVELOP_CHECKSUM c88e7a67cffa0d8dfb8d6349a711d6afb9ae972e
-ENV OCTOBERCMS_DEVELOP_COMMIT 8e604910eb654f3021d942e7020636ced432a064
+ENV OCTOBERCMS_DEVELOP_CHECKSUM 67d4518063a672ce56d5904845fbe10f8cb3ef30
+ENV OCTOBERCMS_DEVELOP_COMMIT 69decfd355c5d303b43cef198d90288e18271c14
 
 RUN git clone https://github.com/octobercms/october.git -b $OCTOBERCMS_TAG . && \
   composer install --no-interaction --prefer-dist --no-scripts && \
