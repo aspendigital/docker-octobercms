@@ -140,4 +140,7 @@ if [ ! -z "$UNIT_TEST" ]; then
   echo "---"
 fi
 
+# Put env variables to /etc/environtment for cron
+printenv >> /etc/environment
+
 exec "$@"
