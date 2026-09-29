@@ -56,6 +56,11 @@ if [ "${VERSION_INFO,,}" == "true" ]; then
   echo "---"
 fi
 
+# Remember the starting commit to detect composer changes after checkout / merge
+if [ ! -z "$GIT_CHECKOUT" ] || [ ! -z "$GIT_MERGE_PR" ]; then
+  GIT_START_REF=$(git rev-parse --verify -q HEAD 2>/dev/null || true)
+fi
+
 # Checkout branch, tag, commit within the container
 if [ ! -z "$GIT_CHECKOUT" ]; then
   if [ ! -d ".git" ]; then
@@ -88,6 +93,21 @@ if [ ! -z "$GIT_MERGE_PR" ]; then
   echo "Diff..."
   git diff --cached --stat
   echo "---"
+fi
+
+# Warn when composer files changed, since dependencies were installed at build time
+if [ ! -z "$GIT_START_REF" ]; then
+  COMPOSER_CHANGES=$(git diff --name-only "$GIT_START_REF" -- composer.json composer.lock '*/composer.json' 2>/dev/null || true)
+  if [ ! -z "$COMPOSER_CHANGES" ]; then
+    echo "Warning: composer files changed since $GIT_START_REF"
+    echo "$COMPOSER_CHANGES" | sed 's/^/ - /'
+    if echo "$COMPOSER_CHANGES" | grep -qx 'composer.lock'; then
+      echo "Dependencies in vendor/ may be outdated. Run 'composer install' within the container."
+    else
+      echo "Dependencies in vendor/ may be outdated. Run 'composer update' within the container."
+    fi
+    echo "---"
+  fi
 fi
 
 # Enable remote IP forwarding for proxy support
